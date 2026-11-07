@@ -2,8 +2,8 @@
 
 [![Lean Action CI](https://github.com/vltanh/lean4-fixed-point/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/vltanh/lean4-fixed-point/actions/workflows/lean_action_ci.yml)
 
-Fixed-point theorems in Lean 4 with Mathlib, as a Lake package meant to be imported by other
-projects. It currently proves **Brouwer's fixed-point theorem**: every continuous map of a
+Fixed-point theorems in Lean 4 with Mathlib. It currently proves **Brouwer's fixed-point
+theorem**: every continuous map of a
 nonempty compact convex subset of a finite-dimensional real normed space into itself has a fixed
 point; and the **no-retraction theorem** for the closed unit ball. Kakutani's and Schauder's
 fixed-point theorems are planned, under `FixedPoint/Kakutani/` and `FixedPoint/Schauder/`.
@@ -157,10 +157,8 @@ Lean `v4.36.0-rc2`, Mathlib `v4.36.0-rc2`.
 ## Credits
 
 - Maintained by The-Anh Vu-Le.
-- Written by Claude (Opus 5.5, model `claude-opus-5-5`) in Claude Code, at the request of
-  The-Anh Vu-Le, on 7 November 2026.
-- The proof was written without consulting other formalizations of Brouwer's theorem. No person
-  has reviewed the proofs; Lean has checked them.
+- Written by Claude (Opus 5.5, model `claude-opus-5-5`) in Claude Code.
+- No person has reviewed the proofs; Lean has checked them.
 
 ## License
 
