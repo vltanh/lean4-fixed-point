@@ -20,14 +20,18 @@ jobs:
         run: >-
           diff <(find FixedPoint -name '*.lean' | sed 's/\.lean$//; s#/#.#g' | sort)
           <(grep -E '^import all FixedPoint\.' scripts/Audit.lean | sed 's/^import all //' | sort)
+      # The audit also checks the axioms of the Challenge's theorems as FixedPointSolution.lean
+      # proves them.
+      # The Challenge defines nothing and states its theorems with Mathlib's definitions, so it
+      # carries no copy of shared definitions to check.
       - name: Audit axioms
         run: lake env lean scripts/Audit.lean
       - name: Check that no line exceeds 100 characters
         shell: python3 {0}
         run: |
           import glob, sys
-          files = ["FixedPoint.lean", *glob.glob("FixedPoint/**/*.lean", recursive=True),
-                   *glob.glob("scripts/*.lean")]
+          files = ["FixedPoint.lean", "FixedPointChallenge.lean", "FixedPointSolution.lean",
+                   *glob.glob("FixedPoint/**/*.lean", recursive=True), *glob.glob("scripts/*.lean")]
           long = [f"{f}:{i}" for f in files
                   for i, line in enumerate(open(f, encoding="utf-8").read().split("\n"), 1)
                   if len(line) > 100]

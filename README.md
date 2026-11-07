@@ -8,6 +8,11 @@ into itself has a fixed point; and the **no-retraction theorem** for the closed 
 Kakutani's and Schauder's fixed-point theorems are planned, under `FixedPoint/Kakutani/` and
 `FixedPoint/Schauder/`.
 
+The Lean statement of record is [`FixedPointChallenge.lean`](FixedPointChallenge.lean): it states Brouwer's theorem
+for compact convex sets, Brouwer's theorem for closed balls and the no-retraction theorem below in
+Mathlib's vocabulary, and [`FixedPointSolution.lean`](FixedPointSolution.lean) proves them from the library
+([Palomar](#palomar)).
+
 ## What is proved
 
 The declarations are in the namespace `Brouwer`. `E` is a finite-dimensional real inner product
@@ -56,10 +61,11 @@ On the way, for `C¹` maps:
 [`Brouwer.exists_fixedPoint_of_contDiffAt`](FixedPoint/Brouwer/SmoothFixedPoint.lean#L96) (a map that
 is `C¹` at every point of the closed unit ball and maps it into itself has a fixed point there).
 
-There is no `sorry`, `axiom` or `native_decide`. `lake env lean scripts/Audit.lean` prints the
-axioms of the main theorems and checks that every declaration of the library depends only on
-`propext`, `Classical.choice` and `Quot.sound`; it also checks that the theorems apply in the
-forms `∀ s : Set V, Convex ℝ s → IsCompact s → s.Nonempty → ∀ f : V → V, MapsTo f s s →
+There is no `axiom` or `native_decide`, and no `sorry` outside the statements of
+[`FixedPointChallenge.lean`](FixedPointChallenge.lean). `lake env lean scripts/Audit.lean` prints the axioms of the main
+theorems and checks that they, the Challenge's theorems as [`FixedPointSolution.lean`](FixedPointSolution.lean) proves
+them, and every declaration of the library depend only on `propext`, `Classical.choice` and
+`Quot.sound`; it also checks that the theorems apply in the forms `∀ s : Set V, Convex ℝ s → IsCompact s → s.Nonempty → ∀ f : V → V, MapsTo f s s →
 ContinuousOn f s → ∃ x ∈ s, f x = x` and, for `EuclideanSpace ℝ (Fin n)`, the no-retraction
 theorem.
 
@@ -112,7 +118,55 @@ References:
   where Brouwer's theorem is a corollary of the change of variables formula.
 
 The full texts of these papers were not available to us; the proof follows the standard argument
-that they are known for, and was not compared with them line by line.
+that they are known for, and was not compared with them line by line. Brouwer's theorem itself is
+due to L. E. J. Brouwer, *Über Abbildung von Mannigfaltigkeiten*, Math. Ann. 71 (1911/1912),
+97–115, whose topological proof is not the one formalized here.
+
+## Other formalizations
+
+Brouwer's fixed-point theorem has other formal proofs; this one is independent of them.
+
+- Lean 4 with Mathlib: for nonempty compact convex sets in finite-dimensional real normed spaces,
+  through Kuhn's cubical Sperner lemma, together with Kakutani's fixed-point theorem
+  ([harfe/fixed-point-theorems-lean4](https://github.com/harfe/fixed-point-theorems-lean4/blob/93a3eed3364281a9dbf9652bb52356a8db65057c/FixedPointTheorems/brouwer.lean),
+  MIT licence); in the plane, for nonempty compact convex subsets of
+  `EuclideanSpace ℝ (Fin 2)`, through the fundamental group of the circle, as a step towards the
+  Jordan curve theorem ([rkirov/jordan_pick](https://github.com/rkirov/jordan_pick/blob/b3c9b7cf7358bf81a077d78ad67e6e8247869ddd/JordanPick/JordanCurve/Brouwer.lean),
+  part of the Palomar entry PALOMAR-2026-08-19-000001); and for the standard simplex and products
+  of simplices, through Scarf's combinatorial theorem, towards Nash equilibria
+  ([math-xmum/Brouwer](https://github.com/math-xmum/Brouwer); Y. Lyu and K. Li,
+  [arXiv:2607.05987](https://arxiv.org/abs/2607.05987)). Mathlib `v4.36.0-rc2` has no Brouwer
+  fixed-point theorem.
+- Lean 3 with mathlib: for compact convex sets in finite-dimensional real normed spaces, through
+  singular homology, by Brendan Seamas Murphy
+  ([Shamrock-Frost/BrouwerFixedPoint](https://github.com/Shamrock-Frost/BrouwerFixedPoint)).
+- HOL Light: `BROUWER` in John Harrison's Multivariate library, for compact convex sets in
+  `real^N`, now derived through the homological degree
+  ([`Multivariate/degree.ml`](https://github.com/jrh13/hol-light/blob/master/Multivariate/degree.ml)).
+- Isabelle/HOL: `brouwer` in
+  [`HOL-Analysis/Brouwer_Fixpoint`](https://isabelle.in.tum.de/dist/library/HOL/HOL-Analysis/Brouwer_Fixpoint.html),
+  translated from HOL Light by Robert Himmelmann, through Kuhn's combinatorial lemma.
+- Mizar: K. Pąk, *Brouwer fixed point theorem in the general case*, Formalized Mathematics 19
+  (2011), 151–153 ([doi:10.2478/v10037-011-0024-3](https://doi.org/10.2478/v10037-011-0024-3)), for
+  compact convex sets with nonempty interior in `E^n`.
+- Coq: the two-dimensional case, through winding numbers, in A. Brunel, *Non-constructive complex
+  analysis in Coq*, TYPES 2011
+  ([doi:10.4230/LIPIcs.TYPES.2011.1](https://doi.org/10.4230/LIPIcs.TYPES.2011.1)).
+
+## Palomar
+
+[`FixedPointChallenge.lean`](FixedPointChallenge.lean) states three theorems with `sorry`, in Mathlib's vocabulary
+and in the namespace `BrouwerChallenge`: `exists_fixedPoint`, `exists_fixedPoint_closedBall` and
+`no_retraction`, the statements of `Brouwer.exists_fixedPoint`,
+`Brouwer.exists_fixedPoint_closedBall` and `Brouwer.no_retraction` above. Its module docstring
+explains every convention they use. [`FixedPointSolution.lean`](FixedPointSolution.lean) restates them word for word
+and proves them from the library. [`comparator.json`](comparator.json) configures Palomar's
+Comparator, and [`formalization.yaml`](formalization.yaml) holds Palomar's metadata. The Challenge
+defines nothing, so it carries no copy of the library's definitions.
+
+```sh
+lake env lake comparator --config=comparator.json   # needs bubblewrap; expect "Your solution is okay!"
+```
 
 ## Using it from another Lake project
 
@@ -133,7 +187,7 @@ project should use the same Mathlib version.
 
 ```sh
 lake exe cache get                 # Mathlib's compiled files
-lake build
+lake build                         # the library, the Challenge and the Solution
 lake env lean scripts/Audit.lean   # axioms
 ```
 
@@ -151,6 +205,7 @@ Lean `v4.36.0-rc2`, Mathlib `v4.36.0-rc2`.
 | [`FixedPoint/Brouwer/Ball.lean`](FixedPoint/Brouwer/Ball.lean) | Brouwer's theorem for closed balls, the no-retraction theorem |
 | [`FixedPoint/Brouwer/NearestPoint.lean`](FixedPoint/Brouwer/NearestPoint.lean) | the nearest-point retraction onto a closed convex set |
 | [`FixedPoint/Brouwer/Convex.lean`](FixedPoint/Brouwer/Convex.lean) | Brouwer's theorem for compact convex sets |
+| [`FixedPointChallenge.lean`](FixedPointChallenge.lean), [`FixedPointSolution.lean`](FixedPointSolution.lean), [`comparator.json`](comparator.json), [`formalization.yaml`](formalization.yaml) | Palomar: the statements of record, their proofs, the Comparator configuration, the metadata |
 | [`scripts/Audit.lean`](scripts/Audit.lean) | the axiom audit |
 | `.github/workflows/` | CI: build, audit, line lengths |
 

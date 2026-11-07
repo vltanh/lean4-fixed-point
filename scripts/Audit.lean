@@ -12,16 +12,19 @@ import all FixedPoint.Brouwer.DetPolynomial
 import all FixedPoint.Brouwer.NearestPoint
 import all FixedPoint.Brouwer.SmoothFixedPoint
 import all FixedPoint.Brouwer.SmoothRetraction
+-- The Challenge's theorems, as `FixedPointSolution.lean` restates and proves them.
+import all FixedPointSolution
 
 /-!
 # Axiom audit
 
 Run with `lake env lean scripts/Audit.lean` after `lake build`.
 
-Prints the axioms on which the main theorems depend (`#print axioms`), then checks that they and
-every declaration of the library, including private and auxiliary ones, depend only on Lean's
-standard axioms `propext`, `Classical.choice` and `Quot.sound`. A `sorry` would show up as the
-axiom `sorryAx`. The run fails otherwise.
+Prints the axioms on which the main theorems depend (`#print axioms`), then checks that they, the
+theorems of `FixedPointChallenge.lean` as `FixedPointSolution.lean` proves them, and every
+declaration of the library, including private and auxiliary ones, depend only on Lean's standard
+axioms `propext`, `Classical.choice` and `Quot.sound`. A `sorry` would show up as the axiom
+`sorryAx`. The run fails otherwise.
 
 Finally, it checks that the main theorems apply in the forms used downstream.
 -/
@@ -30,14 +33,17 @@ open Lean Elab Command
 
 namespace Audit
 
-/-- The main theorems of the library. -/
+/-- The main theorems of the library, and the Challenge's theorems as the Solution proves them. -/
 meta def mainResults : List Name :=
   [``Brouwer.no_retraction,
    ``Brouwer.exists_fixedPoint_closedBall,
    ``Brouwer.exists_fixedPoint,
    ``Brouwer.exists_fixedPoint_continuousMap,
    ``Brouwer.no_contDiffAt_retraction,
-   ``Brouwer.exists_fixedPoint_of_contDiffAt]
+   ``Brouwer.exists_fixedPoint_of_contDiffAt,
+   ``BrouwerChallenge.exists_fixedPoint,
+   ``BrouwerChallenge.exists_fixedPoint_closedBall,
+   ``BrouwerChallenge.no_retraction]
 
 /-- Lean's standard axioms. -/
 meta def standardAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]

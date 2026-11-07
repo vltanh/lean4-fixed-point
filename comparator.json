@@ -1,0 +1,12 @@
+{
+  "challenge_module": "FixedPointChallenge",
+  "solution_module": "FixedPointSolution",
+  "theorem_names": [
+    "BrouwerChallenge.exists_fixedPoint",
+    "BrouwerChallenge.exists_fixedPoint_closedBall",
+    "BrouwerChallenge.no_retraction"
+  ],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}

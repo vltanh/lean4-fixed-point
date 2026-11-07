@@ -1,0 +1,239 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+version: "v0.4"
+
+project:
+  name: "Brouwer's fixed-point theorem and the no-retraction theorem, with an analytic proof"
+  description: >-
+    A Lean 4 / Mathlib proof of Brouwer's fixed-point theorem in every finite dimension: a
+    continuous map of a nonempty compact convex subset of a finite-dimensional real normed space
+    into itself has a fixed point. Also proved: the same for closed balls of a finite-dimensional
+    real inner product space, and the no-retraction theorem, that the unit sphere of such a space
+    is not a retract of its closed unit ball.
+
+
+    The proof is analytic, along the lines of Milnor (1978) and Rogers (1980), and uses no
+    homology, degree theory or simplicial approximation. A C1 retraction r of the closed unit ball
+    onto its sphere is ruled out with the change of variables formula: for small t > 0 the map
+    x + t(r(x) - x) sends the open ball bijectively onto itself with positive Jacobian determinant,
+    so the integral of that determinant over the ball, a polynomial in t, equals the volume of the
+    ball for every t, whereas at t = 1 it vanishes. Brouwer's theorem follows for C1 self-maps of
+    the ball by the ray construction, for continuous ones by smoothing by convolution, and for
+    compact convex sets through the nearest-point retraction. Brouwer's theorem has earlier formal
+    proofs in HOL Light, Isabelle/HOL and Mizar, in Coq for the plane, in Lean 3 through singular
+    homology, and in Lean 4 for the plane and for the standard simplex; this proof is independent
+    of them.
+  authors:
+    - "The-Anh Vu-Le"
+  license: "Apache-2.0"
+  responsible_maintainers:
+    - "The-Anh Vu-Le"
+
+classification:
+  arxiv: ["math.GN", "math.AT", "math.CA"]
+  msc2020: ["55M20", "54H25", "47H10", "26B10", "26B15"]
+
+sources:
+  - title: "Über Abbildung von Mannigfaltigkeiten"
+    authors:
+      - "L. E. J. Brouwer"
+    id: "doi:10.1007/BF01456931"
+    type: "paper"
+    location: "Math. Ann. 71 (1911/1912), 97-115"
+    relationship: "formalizes"
+    note: >-
+      Brouwer's fixed-point theorem in every finite dimension, proved there by topological
+      methods. The formalization proves the theorem by the analytic route of Milnor and Rogers
+      (next two sources), not by Brouwer's argument, and was not compared with this paper.
+    author_endorsement: "n/a"
+  - title: "Analytic proofs of the \"hairy ball theorem\" and the Brouwer fixed point theorem"
+    authors:
+      - "John Milnor"
+    id: "doi:10.1080/00029890.1978.11994635"
+    type: "paper"
+    location: "Amer. Math. Monthly 85 (1978), 521-524 (JSTOR: doi:10.2307/2320860)"
+    relationship: "other"
+    note: >-
+      Source of the method: analytic proofs of the hairy ball theorem and of Brouwer's theorem, in
+      which the volume of the image of a region under a perturbation x + t v(x) of the identity is
+      a polynomial in t. The formal proof follows the standard form of this argument for Brouwer's
+      theorem (with Rogers's simplification, next source); the paper's text was not compared with
+      the formalization line by line. The hairy ball theorem is not formalized.
+    author_endorsement: "not-contacted"
+  - title: "A less strange version of Milnor's proof of Brouwer's fixed-point theorem"
+    authors:
+      - "C. A. Rogers"
+    id: "doi:10.1080/00029890.1980.11995082"
+    type: "paper"
+    location: "Amer. Math. Monthly 87 (1980), 525-527"
+    relationship: "other"
+    note: >-
+      Source of the method: a simplification of Milnor's proof of Brouwer's theorem. The formal
+      proof follows the standard form of the Milnor-Rogers argument, applied to a supposed C1
+      retraction of the closed ball onto its sphere (README, Method, step 1); the paper's text was
+      not compared with the formalization line by line.
+    author_endorsement: "n/a"
+  - title: "Change of variables in multiple integrals"
+    authors:
+      - "Peter D. Lax"
+    id: "doi:10.1080/00029890.1999.12005078"
+    type: "paper"
+    location: "Amer. Math. Monthly 106 (1999), 497-501"
+    relationship: "background"
+    note: >-
+      Obtains Brouwer's theorem as a corollary of a change of variables formula; context only,
+      not followed by the formalization, which uses Mathlib's change of variables formula.
+    author_endorsement: "not-contacted"
+
+related_formalizations:
+  - id: "https://github.com/harfe/fixed-point-theorems-lean4/blob/93a3eed3364281a9dbf9652bb52356a8db65057c/FixedPointTheorems/brouwer.lean"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (harfe, MIT licence): Brouwer's fixed-point theorem for nonempty compact
+      convex sets in a finite-dimensional real normed space, proved through Kuhn's cubical Sperner
+      lemma, together with Kakutani's fixed-point theorem. Same generality as this work's main
+      theorem, by a combinatorial method; this work's proof is analytic (Milnor-Rogers) and does
+      not use or adapt that development.
+  - id: "https://github.com/rkirov/jordan_pick/blob/b3c9b7cf7358bf81a077d78ad67e6e8247869ddd/JordanPick/JordanCurve/Brouwer.lean"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (Rado Kirov), within the registered Palomar entry
+      PALOMAR-2026-08-19-000001 (the Jordan curve theorem, at this commit): Brouwer's fixed-point
+      theorem in the plane, for nonempty compact convex subsets of EuclideanSpace R (Fin 2) and
+      continuous maps C(s, s), proved through the fundamental group of the circle (path lifting
+      along R -> AddCircle 1) and the ray construction, as a step towards the Jordan curve theorem.
+      This work proves the theorem in every finite dimension by a different, analytic method, and
+      does not use or adapt that development.
+  - id: "https://github.com/math-xmum/Brouwer/blob/f9dc162170e8711f78059a87edcd38ffc44a1bfb/Gametheory/Brouwer.lean"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (Yuwei Lyu, Kai Li; Formalizing Scarf, Brouwer, and Nash in Lean,
+      arXiv:2607.05987): Brouwer's fixed-point theorem for continuous self-maps of the standard
+      simplex, and of finite products of simplices, through Scarf's combinatorial theorem, towards
+      the existence of Nash equilibria. A different statement (simplices) and method
+      (combinatorial); this work does not use or adapt it.
+  - id: "https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/2883ceb0f5d461155fa1689266a7af40ff8ae671/src/brouwer_fixed_point.lean"
+    relationship: "independent"
+    note: >-
+      Lean 3 / mathlib (Brendan Seamas Murphy), listed for Brouwer's theorem (no. 36) in Mathlib's
+      list of 100 theorems: Brouwer's theorem for nonempty compact convex subsets of
+      finite-dimensional real normed spaces, through the singular homology of spheres. Mathlib, at
+      the revision this project pins, has no Brouwer fixed-point theorem. This work does not use or
+      adapt it.
+  - id: "https://github.com/jrh13/hol-light/blob/078839ea84531bd6c6cec9a58ebf69ba37149e0e/Multivariate/degree.ml"
+    relationship: "independent"
+    note: >-
+      HOL Light (John Harrison), theorem BROUWER of the Multivariate library: nonempty compact
+      convex subsets of real^N. In the current library it is derived from the no-retraction
+      theorem through the homological Brouwer degree (Multivariate/degree.ml); Harrison's earlier
+      proof used Kuhn's combinatorial lemma, the proof that the Isabelle/HOL port keeps. This work
+      does not use or adapt it.
+  - id: "https://isabelle.in.tum.de/dist/library/HOL/HOL-Analysis/Brouwer_Fixpoint.html"
+    relationship: "independent"
+    note: >-
+      Isabelle/HOL, theory HOL-Analysis/Brouwer_Fixpoint (John Harrison; translated from HOL Light
+      by Robert Himmelmann, with L. C. Paulson): theorem brouwer, for nonempty compact convex
+      subsets of a Euclidean space, through Kuhn's combinatorial lemma, and the no-retraction
+      theorem for closed balls. This work does not use or adapt it.
+  - id: "doi:10.2478/v10037-011-0024-3"
+    relationship: "independent"
+    note: >-
+      Mizar (Karol Pąk, Brouwer Fixed Point Theorem in the General Case, Formalized Mathematics
+      19(3) (2011), 151-153; MML article BROUWER2): Brouwer's theorem for convex compact subsets of
+      the Euclidean space E^n with nonempty interior. This work does not use or adapt it.
+  - id: "doi:10.4230/LIPIcs.TYPES.2011.1"
+    relationship: "independent"
+    note: >-
+      Coq (Aloïs Brunel, Non-constructive complex analysis in Coq, TYPES 2011, LIPIcs 19 (2013),
+      1-15): the two-dimensional Brouwer fixed-point theorem, through winding numbers. No Coq/Rocq
+      proof in every dimension was found. This work does not use or adapt it.
+
+status:
+  scope: >-
+    Formalized: Brouwer's fixed-point theorem for nonempty compact convex subsets of
+    finite-dimensional real normed spaces (for maps continuous on the set, and for continuous maps
+    C(s, s)); Brouwer's theorem for closed balls of finite-dimensional real inner product spaces;
+    the no-retraction theorem for the closed unit ball of a finite-dimensional real inner product
+    space; and, on the way, the same two theorems for maps that are C1 at every point of the closed
+    unit ball. The Challenge states the first, the second and the third. Not formalized: Milnor's
+    hairy ball theorem; Brouwer's theorem for spaces that are only homeomorphic to a ball; the
+    fixed-point theorems of Schauder (infinite dimension) and Kakutani (set-valued maps).
+  sorry_count: 0
+  sorry_in_definitions: 0
+  axioms: []
+
+automation:
+  methods:
+    - method: "agent"
+      models: ["claude-opus-5-5"]
+      framework: "Claude Code 2.1.318 (Claude Agent SDK)"
+      tool_setup: >-
+        A Claude Code agent wrote the Lean code (the statements, the proofs, the axiom audit and
+        the Challenge/Solution pair) and the documentation. Lean builds, the axiom audit and
+        Comparator were run locally.
+      cost:
+        wall_time: "not tracked"
+        spend_usd: "not tracked"
+        hardware: "local machine (Linux) for Lean builds; model via API"
+      prompting_notes: "not recorded"
+  spend_usd: "not tracked"
+  notes: >-
+    The-Anh Vu-Le maintains the project and is responsible for it. Claude Opus 5.5
+    (claude-opus-5-5), in Claude Code, wrote the Lean code and the documentation. No person has
+    reviewed the proofs; Lean's kernel has checked them.
+
+fidelity:
+  divergences: >-
+    Statements: none known. The Challenge states Brouwer's theorem in its standard form, for
+    nonempty compact convex subsets of a finite-dimensional real normed space (equivalently of
+    R^n, for every n >= 0 and every norm), a continuous self-map being a total function that is
+    continuous on the set and maps it into itself. The closed-ball theorem and the no-retraction
+    theorem are stated for finite-dimensional real inner product spaces, which are R^n with the
+    Euclidean norm up to a linear isometry; in dimension 0 the no-retraction theorem holds because
+    the sphere is empty. Proofs: Brouwer's own proof is not followed. The proof is the analytic
+    argument of Milnor and Rogers in its standard form (no C1 retraction, by the change of
+    variables formula and a polynomial identity in t), followed by the ray construction for C1
+    maps, smoothing by convolution for continuous maps, an affine change of variables for other
+    balls, and the nearest-point retraction for compact convex sets, after a linear isomorphism
+    with EuclideanSpace R (Fin n). The polynomial dependence of det(1 + tA) on t is obtained by
+    Lagrange interpolation through t = 0, 1, ..., dim E. The papers' texts were not compared with
+    the formalization line by line.
+
+review:
+  status: "unchecked"
+  reviewers:
+    - "none"
+  notes: >-
+    No person has reviewed the statements or the proofs. Lean's kernel checks the proofs, and
+    Comparator, with Lean's kernel and the NanoDa kernel, checks that FixedPointSolution.lean proves the
+    statements of FixedPointChallenge.lean using only propext, Classical.choice and Quot.sound.
+
+alignment:
+  namespace: "BrouwerChallenge"
+  statements:
+    - source: "Brouwer's fixed-point theorem (Brouwer 1911/1912)"
+      lean: "BrouwerChallenge.exists_fixedPoint"
+      module: "FixedPointChallenge"
+      status: "proved"
+      note: >-
+        Every map of a nonempty compact convex subset s of a finite-dimensional real normed space
+        into itself that is continuous on s has a fixed point in s.
+    - source: "Brouwer's fixed-point theorem for closed balls"
+      lean: "BrouwerChallenge.exists_fixedPoint_closedBall"
+      module: "FixedPointChallenge"
+      status: "proved"
+      note: >-
+        Every map of a closed ball closedBall c R, R >= 0, of a finite-dimensional real inner
+        product space into itself that is continuous on the ball has a fixed point in it.
+    - source: "The no-retraction theorem (equivalent to Brouwer's theorem)"
+      lean: "BrouwerChallenge.no_retraction"
+      module: "FixedPointChallenge"
+      status: "proved"
+      note: >-
+        No map of a finite-dimensional real inner product space is continuous on the closed unit
+        ball, maps it into the unit sphere and fixes every point of the sphere.
+
+acknowledgements: >-
+  Mathlib (among others its change of variables formula, inverse function theorem for Lipschitz
+  perturbations of the identity, smoothing by convolution and nearest points in convex sets) and
+  the Lean FRO toolchain; Palomar's Comparator. Written with Claude (Anthropic); see the README's
+  credits.
