@@ -158,8 +158,7 @@ Lean `v4.36.0-rc2`, Mathlib `v4.36.0-rc2`.
 
 - Maintained by The-Anh Vu-Le.
 - Written by Claude (Opus 5.5, model `claude-opus-5-5`) in Claude Code, at the request of
-  The-Anh Vu-Le, on 7 November 2026, for the formalization of Hales and Vajjha's *Packings of
-  Smoothed Polygons*, whose proof of the maximum principle needs Brouwer's theorem.
+  The-Anh Vu-Le, on 7 November 2026.
 - The proof was written without consulting other formalizations of Brouwer's theorem. No person
   has reviewed the proofs; Lean has checked them.
 
