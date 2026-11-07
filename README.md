@@ -2,11 +2,11 @@
 
 [![Lean Action CI](https://github.com/vltanh/lean4-fixed-point/actions/workflows/lean_action_ci.yml/badge.svg)](https://github.com/vltanh/lean4-fixed-point/actions/workflows/lean_action_ci.yml)
 
-Fixed-point theorems in Lean 4 with Mathlib. It currently proves **Brouwer's fixed-point
-theorem**: every continuous map of a
-nonempty compact convex subset of a finite-dimensional real normed space into itself has a fixed
-point; and the **no-retraction theorem** for the closed unit ball. Kakutani's and Schauder's
-fixed-point theorems are planned, under `FixedPoint/Kakutani/` and `FixedPoint/Schauder/`.
+Fixed-point theorems in Lean 4 with Mathlib. It currently proves **Brouwer's fixed-point theorem**:
+every continuous map of a nonempty compact convex subset of a finite-dimensional real normed space
+into itself has a fixed point; and the **no-retraction theorem** for the closed unit ball.
+Kakutani's and Schauder's fixed-point theorems are planned, under `FixedPoint/Kakutani/` and
+`FixedPoint/Schauder/`.
 
 ## What is proved
 
