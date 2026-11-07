@@ -17,9 +17,10 @@ fixes every point of `S`.
 
 ## Proof
 
-This is the analytic proof of Milnor (1978), in the form given by Rogers (1980). Let `g = r - id`,
-whose derivative is bounded by `L` on `B̄`, so that `g` is `L`-Lipschitz on `B̄`, and let
-`f t = id + t • g = (1 - t) • id + t • r`.
+This is the analytic argument going back to Milnor (1978) and Rogers (1980): the volume of the
+image of `B` under a deformation of the identity towards `r` is a polynomial in the deformation
+parameter. Let `g = r - id`, whose derivative is bounded by `L` on `B̄`, so that `g` is
+`L`-Lipschitz on `B̄`, and let `f t = id + t • g = (1 - t) • id + t • r`.
 
 * For `0 < t < 1 / (L + 1)`, `f t` is injective on `B`, maps `B` into `B` (as `‖r‖ = 1`), and
   `f t '' B` is open, since `f t` is a Lipschitz perturbation of the identity
@@ -39,6 +40,8 @@ whose derivative is bounded by `L` on `B̄`, so that `g` is `L`-Lipschitz on `B�
   Amer. Math. Monthly 85 (1978), 521–524.
 * C. A. Rogers, *A less strange version of Milnor's proof of Brouwer's fixed-point theorem*,
   Amer. Math. Monthly 87 (1980), 525–527.
+* P. D. Lax, *Change of variables in multiple integrals*, Amer. Math. Monthly 106 (1999),
+  497–501.
 -/
 
 @[expose] public section
