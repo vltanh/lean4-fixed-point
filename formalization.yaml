@@ -2,7 +2,7 @@
 version: "v0.4"
 
 project:
-  name: "Brouwer's fixed-point theorem and the no-retraction theorem, with an analytic proof"
+  name: "The fixed-point theorems of Brouwer, Kakutani and Schauder, with an analytic proof of Brouwer's theorem"
   description: >-
     A Lean 4 / Mathlib proof of Brouwer's fixed-point theorem in every finite dimension: a
     continuous map of a nonempty compact convex subset of a finite-dimensional real normed space
@@ -22,6 +22,19 @@ project:
     proofs in HOL Light, Isabelle/HOL and Mizar, in Coq for the plane, in Lean 3 through singular
     homology, and in Lean 4 for the plane and for the standard simplex; this proof is independent
     of them.
+
+
+    Kakutani's fixed-point theorem (1941) and Schauder's fixed-point theorem (1930) are derived from
+    Brouwer's. Kakutani's: a set-valued map of a nonempty compact convex subset of a
+    finite-dimensional real normed space, with closed graph and nonempty convex values, has a point
+    x in its own value at x; it is proved by Kakutani's argument (continuous approximations, Brouwer,
+    a limit along a subsequence, then a retraction for general compact convex sets), with the
+    approximating maps built from a partition of unity instead of barycentric subdivisions.
+    Schauder's: a continuous self-map of a nonempty compact convex subset of a real normed space of
+    any dimension has a fixed point, and so does a continuous self-map of a nonempty closed convex
+    subset of a real Banach space with relatively compact image; it is proved through Schauder's
+    projection onto the convex hull of a finite epsilon-net, Brouwer's theorem in its
+    finite-dimensional span, and Mazur's theorem for the second form.
   authors:
     - "The-Anh Vu-Le"
   license: "Apache-2.0"
@@ -29,8 +42,8 @@ project:
     - "The-Anh Vu-Le"
 
 classification:
-  arxiv: ["math.GN", "math.AT", "math.CA"]
-  msc2020: ["55M20", "54H25", "47H10", "26B10", "26B15"]
+  arxiv: ["math.GN", "math.AT", "math.CA", "math.FA"]
+  msc2020: ["55M20", "54H25", "47H10", "47H04", "54C60", "26B10", "26B15"]
 
 sources:
   - title: "Über Abbildung von Mannigfaltigkeiten"
@@ -72,6 +85,48 @@ sources:
       retraction of the closed ball onto its sphere (docs/DETAILS.md, Method, step 1); the paper's
       text was not compared with the formalization line by line.
     author_endorsement: "n/a"
+  - title: "A generalization of Brouwer's fixed point theorem"
+    authors:
+      - "Shizuo Kakutani"
+    id: "doi:10.1215/S0012-7094-41-00838-4"
+    type: "paper"
+    location: "Duke Math. J. 8 (1941), 457-459"
+    relationship: "formalizes"
+    note: >-
+      Kakutani's fixed-point theorem: Theorem 1 (closed simplices) and its Corollary (bounded closed
+      convex sets of a Euclidean space), with his upper semicontinuity (closed graph). Proved by
+      Kakutani's argument except that the approximating maps come from a partition of unity
+      instead of barycentric subdivisions (fidelity). Theorem 2 (von Neumann's lemma) and Theorem 3
+      (the minimax theorem) are not formalized. Compared with a scan of the printed pages.
+    author_endorsement: "n/a"
+  - title: "Der Fixpunktsatz in Funktionalräumen"
+    authors:
+      - "Juliusz Schauder"
+    id: "doi:10.4064/sm-2-1-171-180"
+    type: "paper"
+    location: "Studia Math. 2 (1930), 171-180"
+    relationship: "formalizes"
+    note: >-
+      Schauder's fixed-point theorem: Satz I for compact convex sets, formalized for real normed
+      spaces (Schauder states it for complete metric linear spaces, where his proof has a gap
+      outside the locally convex case), and Satz II for closed convex sets of Banach spaces and
+      maps with relatively compact image. Satz I is proved along Schauder's outline with a
+      projection in place of his simplicial approximation, Satz II by Schauder's argument
+      (fidelity). Satz III (weak continuity) is not formalized. Compared with a scan of the printed
+      pages.
+    author_endorsement: "n/a"
+  - title: "Über die kleinste konvexe Menge, die eine gegebene kompakte Menge enthält"
+    authors:
+      - "Stanisław Mazur"
+    id: "doi:10.4064/sm-2-1-7-9"
+    type: "paper"
+    location: "Studia Math. 2 (1930), 7-9"
+    relationship: "other"
+    note: >-
+      Mazur's theorem, Schauder's Hilfssatz II: in a Banach space the closed convex hull of a
+      compact set is compact. Formalized (Schauder.isCompact_closedConvexHull) from Mathlib's
+      convex hulls of totally bounded sets, and used, as by Schauder, for Satz II.
+    author_endorsement: "n/a"
   - title: "Change of variables in multiple integrals"
     authors:
       - "Peter D. Lax"
@@ -90,9 +145,12 @@ related_formalizations:
     note: >-
       Lean 4 / Mathlib (harfe, MIT licence): Brouwer's fixed-point theorem for nonempty compact
       convex sets in a finite-dimensional real normed space, proved through Kuhn's cubical Sperner
-      lemma, together with Kakutani's fixed-point theorem. Same generality as this work's main
-      theorem, by a combinatorial method; this work's proof is analytic (Milnor-Rogers) and does
-      not use or adapt that development.
+      lemma, together with Kakutani's fixed-point theorem (FixedPointTheorems/kakutani.lean,
+      kakutani_fixed_point: compact convex sets of finite-dimensional real normed spaces, closed
+      graph, nonempty convex values; by a continuous selection from a partition of unity,
+      Caratheodory's theorem and a limit). Same generality as this work's Brouwer and Kakutani
+      theorems; this work's Brouwer proof is analytic (Milnor-Rogers), and it does not use or adapt
+      that development.
   - id: "https://github.com/rkirov/jordan_pick/blob/b3c9b7cf7358bf81a077d78ad67e6e8247869ddd/JordanPick/JordanCurve/Brouwer.lean"
     relationship: "independent"
     note: >-
@@ -146,6 +204,56 @@ related_formalizations:
       Coq (Aloïs Brunel, Non-constructive complex analysis in Coq, TYPES 2011, LIPIcs 19 (2013),
       1-15): the two-dimensional Brouwer fixed-point theorem, through winding numbers. No Coq/Rocq
       proof in every dimension was found. This work does not use or adapt it.
+  - id: "https://github.com/jrh13/hol-light/blob/078839ea84531bd6c6cec9a58ebf69ba37149e0e/Multivariate/degree.ml#L7757"
+    relationship: "independent"
+    note: >-
+      HOL Light (John Harrison), theorem SCHAUDER of the Multivariate library: in real^N, a
+      continuous map of a nonempty convex set into a compact subset of it has a fixed point;
+      finite-dimensional only, proved through absolute retracts. No Kakutani theorem in HOL Light.
+      This work does not use or adapt it.
+  - id: "https://github.com/TauCetiProject/TauCeti/blob/686d0d7f4390d0e8d6185114e99e90b74c599656/TauCeti/Analysis/Convex/SchauderFixedPoint.lean"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (TauCeti): Schauder's fixed-point theorem for compact convex sets of real
+      normed spaces and for closed convex sets and maps with relatively compact image, without
+      completeness, with the Leray-Schauder and Schaefer theorems; through a partition-of-unity
+      projection and Brouwer's theorem by singular homology. This work does not use or adapt it.
+  - id: "https://github.com/danlyng/Econlib/blob/003655ccf010cdf44c4f67d6675167b54ce0e9df/Econlib/Math/Topology/Schauder.lean#L328"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (Econlib): Schauder's theorem for compact convex sets of real normed spaces
+      through the Schauder projection; also Tychonoff's theorem, Kakutani's theorem in finite
+      dimension (Kakutani.lean, kakutaniFixedPoint) and the Fan-Glicksberg theorem in Hausdorff
+      locally convex spaces. This work does not use or adapt it.
+  - id: "https://github.com/matheconlib/matheconlib/blob/212e924aab86ef196ed36886594c3ebf98654888/MathEconLib/ForMathlib/Kakutani.lean#L211"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (matheconlib): the Kakutani-Glicksberg-Fan theorem in Hausdorff locally
+      convex spaces, for upper hemicontinuous maps with compact convex nonempty values, and
+      Schauder's theorem in Hausdorff locally convex spaces (ForMathlib/Schauder.lean), through
+      Scarf's lemma. This work does not use or adapt it.
+  - id: "https://github.com/LeanEconomics/DynamicProgramming/blob/9ae902b518234a376d07af7a7be9437b5e491700/RecursiveMethods/EquilibriaWithDistortions/EquilibriaWithDistortions/Schauder.lean"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (LeanEconomics): Schauder's theorem for compact convex sets, and for closed
+      convex sets of Banach spaces with relatively compact image through Mazur's theorem. This work
+      does not use or adapt it.
+  - id: "https://github.com/elazarg/UniformEquilibrium/blob/22f6ed14afb62eac34b679ada02b63fae9869693/MathUE/SchauderFixedPoint.lean#L225"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (elazarg, MIT licence): Schauder's theorem for compact convex sets of real
+      normed spaces, through harfe's Brouwer theorem. This work does not use or adapt it.
+  - id: "https://github.com/lyw-ops/General_Scarf/blob/9b784ba0e81ca3a2f1126c1087fdf7f2d03e16e0/BeyondSperner/FixedPoint/CompactConvexKakutani.lean"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (lyw-ops, MIT licence): Kakutani's theorem in finite dimension, in
+      closed-graph and upper hemicontinuous forms, through a vector Scarf lemma. This work does not
+      use or adapt it.
+  - id: "https://github.com/RitinkarDB/eco-lean/blob/487060fb2ff5e04bf195c73913948ab5f548259d/EcoLean/MathematicalMiscellany/Kakutani.lean#L735"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (eco-lean): Kakutani's theorem in finite dimension at least 2, closed graph,
+      compact convex nonempty values. This work does not use or adapt it.
 
 status:
   scope: >-
@@ -154,9 +262,23 @@ status:
     C(s, s)); Brouwer's theorem for closed balls of finite-dimensional real inner product spaces;
     the no-retraction theorem for the closed unit ball of a finite-dimensional real inner product
     space; and, on the way, the same two theorems for maps that are C1 at every point of the closed
-    unit ball. The Challenge states the first, the second and the third. Not formalized: Milnor's
-    hairy ball theorem; Brouwer's theorem for spaces that are only homeomorphic to a ball; the
-    fixed-point theorems of Schauder (infinite dimension) and Kakutani (set-valued maps).
+    unit ball, and Brouwer's theorem for convex hulls of finite sets in real normed spaces of any
+    dimension. Kakutani's fixed-point theorem for set-valued maps with closed graph and nonempty
+    convex values on nonempty compact convex subsets of finite-dimensional real normed spaces, for
+    closed simplices (Kakutani's Theorem 1) and for compact convex subsets of finite-dimensional
+    real inner product spaces (his Corollary), with the equivalence of a closed graph and Kakutani's
+    sequential upper semicontinuity. Schauder's fixed-point theorem for nonempty compact convex
+    subsets of real normed spaces of any dimension, complete or not, and for nonempty closed convex
+    subsets of real Banach spaces and maps with relatively compact image; Mazur's theorem on the
+    compactness of closed convex hulls, used for the latter. The Challenge states Brouwer's theorem
+    for compact convex sets and for closed balls, the no-retraction theorem, Kakutani's theorem and
+    the two forms of Schauder's theorem. Not formalized: Milnor's hairy ball theorem; Brouwer's
+    theorem for spaces that are only homeomorphic to a ball; Kakutani's Theorem 2 (von Neumann's
+    intersection lemma) and Theorem 3 (the minimax theorem); Schauder's Satz III (weakly continuous
+    maps in separable Banach spaces) and his Satz I beyond locally convex spaces (Schauder's
+    problem, Scottish Book Problem 54); the extensions of
+    Kakutani's and Schauder's theorems to locally convex spaces (Tychonoff, Fan, Glicksberg) and
+    Kakutani's theorem in infinite-dimensional normed spaces (Bohnenblust and Karlin).
   sorry_count: 0
   sorry_in_definitions: 0
   axioms: []
@@ -198,42 +320,107 @@ fidelity:
     Lagrange interpolation through t = 0, 1, ..., dim E. The papers' texts were not compared with
     the formalization line by line.
 
+
+    Kakutani. Statements: the Challenge states Kakutani's theorem for nonempty compact convex
+    subsets of a finite-dimensional real normed space, Kakutani's Euclidean spaces up to a linear
+    isomorphism; Kakutani's upper semicontinuity is stated as a closed graph over the set, which
+    for closed sets is equivalent to his sequential definition (Kakutani.isClosed_graph_iff_seq),
+    and the values are required nonempty and convex (closed values follow from the closed graph).
+    Kakutani's Theorem 1 is proved for convex hulls of nonempty finite sets, closed simplices being
+    a special case also stated. Proofs: Kakutani's argument is followed (continuous approximations,
+    Brouwer's theorem, a limit along a subsequence using the closed graph and convex values, then
+    the reduction of compact convex sets to Theorem 1 through a retraction). Kakutani's Theorem 1
+    does not state that the values are nonempty, but his proof needs it and the theorem fails
+    without it; the formalization requires it, as his Theorem 2 does. One departure:
+    Kakutani approximates the set-valued map by maps that are linear on the simplices of the n-th
+    barycentric subdivision of the simplex, while the formalization uses the partition of unity of
+    Schauder's projection subordinate to a cover by balls of radius 1/(n+1), and Caratheodory's
+    theorem to write the fixed point of the approximation as a convex combination of dim V + 1
+    points (Kakutani has the r + 1 vertices of a small simplex). Reason: Mathlib has no geometric
+    barycentric subdivision of a simplex, and building it (the subdivision, piecewise-linear maps
+    on it and the decay of its mesh) is a large effort for one step. Kakutani encloses the set in
+    a simplex, the formalization in the convex hull of a finite set, and uses the nearest-point
+    retraction.
+
+
+    Schauder. Statements: Schauder states Satz I for complete metric linear spaces (Banach's
+    axioms), not necessarily locally convex; his proof uses that convex combinations of nearby
+    points stay nearby (Hilfssatz I), which holds in normed and locally convex spaces only, and the
+    general case became Schauder's problem (Scottish Book Problem 54; R. Cauty's claimed solution,
+    Fund. Math. 170 (2001), has a gap). The formalization states Satz I for real normed spaces,
+    complete or not, where Schauder's argument is valid. Satz II is stated as Schauder does, for
+    real Banach spaces and closed convex sets H with F(H) relatively compact (Schauder's
+    "kompakt"). Proofs: Satz II is proved as Schauder does, by Mazur's theorem (Schauder's
+    Hilfssatz II) and Satz I. For Satz I the formalization follows Schauder's outline (a finite
+    epsilon-net, Brouwer's theorem on its convex hull, a point moved by little, compactness) with
+    one departure: Schauder triangulates the convex hull of the net and approximates F by a
+    simplicial map sending each vertex d to a point of the net within epsilon of F(d), while the
+    formalization composes F with the projection onto the hull given by the partition of unity
+    max(0, epsilon - |x - c|), the Schauder projection of later expositions, which is not in the
+    paper. Reason: Mathlib has no triangulations of polytopes or simplicial approximation.
+    Brouwer's theorem on the hull is applied in the finite-dimensional span of the net.
+
 review:
   status: "unchecked"
   reviewers:
     - "none"
   notes: >-
-    No person has reviewed the statements or the proofs. Lean's kernel checks the proofs, and
-    Comparator, with Lean's kernel and the NanoDa kernel, checks that FixedPointSolution.lean proves the
-    statements of FixedPointChallenge.lean using only propext, Classical.choice and Quot.sound.
+    No person has reviewed the statements or the proofs. A separate Claude agent reviewed the
+    statements and proofs of Kakutani's and Schauder's theorems against the theorems' standard
+    forms and Kakutani's paper; its findings were addressed. Lean's kernel checks the proofs, and
+    Comparator, with Lean's kernel and the NanoDa kernel, checks that FixedPointSolution.lean proves
+    the statements of FixedPointChallenge.lean using only propext, Classical.choice and Quot.sound.
 
 alignment:
-  namespace: "BrouwerChallenge"
+  namespace: "FixedPointChallenge"
   statements:
     - source: "Brouwer's fixed-point theorem (Brouwer 1911/1912)"
-      lean: "BrouwerChallenge.exists_fixedPoint"
+      lean: "FixedPointChallenge.brouwer"
       module: "FixedPointChallenge"
       status: "proved"
       note: >-
         Every map of a nonempty compact convex subset s of a finite-dimensional real normed space
         into itself that is continuous on s has a fixed point in s.
     - source: "Brouwer's fixed-point theorem for closed balls"
-      lean: "BrouwerChallenge.exists_fixedPoint_closedBall"
+      lean: "FixedPointChallenge.brouwer_closedBall"
       module: "FixedPointChallenge"
       status: "proved"
       note: >-
         Every map of a closed ball closedBall c R, R >= 0, of a finite-dimensional real inner
         product space into itself that is continuous on the ball has a fixed point in it.
     - source: "The no-retraction theorem (equivalent to Brouwer's theorem)"
-      lean: "BrouwerChallenge.no_retraction"
+      lean: "FixedPointChallenge.no_retraction"
       module: "FixedPointChallenge"
       status: "proved"
       note: >-
         No map of a finite-dimensional real inner product space is continuous on the closed unit
         ball, maps it into the unit sphere and fixes every point of the sphere.
+    - source: "Kakutani's fixed-point theorem (Kakutani 1941, Theorem 1 and Corollary)"
+      lean: "FixedPointChallenge.kakutani"
+      module: "FixedPointChallenge"
+      status: "proved"
+      note: >-
+        If a set-valued map sends each point of a nonempty compact convex subset s of a
+        finite-dimensional real normed space to a nonempty convex subset of s, and its graph over s
+        is closed, then some point x of s lies in its own value at x.
+    - source: "Schauder's fixed-point theorem (Schauder 1930), for compact convex sets"
+      lean: "FixedPointChallenge.schauder"
+      module: "FixedPointChallenge"
+      status: "proved"
+      note: >-
+        Every map of a nonempty compact convex subset s of a real normed space, of any dimension,
+        into itself that is continuous on s has a fixed point in s.
+    - source: "Schauder's fixed-point theorem (Schauder 1930), for maps with relatively compact image"
+      lean: "FixedPointChallenge.schauder_of_isCompact_closure_image"
+      module: "FixedPointChallenge"
+      status: "proved"
+      note: >-
+        Every map of a nonempty closed convex subset s of a real Banach space into itself that is
+        continuous on s and has a relatively compact image f(s) has a fixed point in s.
 
 acknowledgements: >-
   Mathlib (among others its change of variables formula, inverse function theorem for Lipschitz
-  perturbations of the identity, smoothing by convolution and nearest points in convex sets) and
+  perturbations of the identity, smoothing by convolution, nearest points in convex sets,
+  Caratheodory's theorem and the convex hulls of totally bounded sets) and
   the Lean FRO toolchain; Palomar's Comparator. Written with Claude (Anthropic); see the README's
   credits.

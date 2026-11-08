@@ -2,6 +2,7 @@ module
 
 public meta import Lean.Elab.Command
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Analysis.Normed.Lp.lpSpace
 -- One `import all` line per module of the library, so that proofs are visible to the axiom
 -- traversal (the module system hides them from a plain `import`). Generate the lines with
 --   find FixedPoint -name '*.lean' | sort | sed 's/\.lean$//; s#/#.#g; s/^/import all /'
@@ -10,8 +11,16 @@ import all FixedPoint.Brouwer.Ball
 import all FixedPoint.Brouwer.Convex
 import all FixedPoint.Brouwer.DetPolynomial
 import all FixedPoint.Brouwer.NearestPoint
+import all FixedPoint.Brouwer.Polytope
 import all FixedPoint.Brouwer.SmoothFixedPoint
 import all FixedPoint.Brouwer.SmoothRetraction
+import all FixedPoint.Kakutani
+import all FixedPoint.Kakutani.Convex
+import all FixedPoint.Kakutani.Simplex
+import all FixedPoint.Schauder
+import all FixedPoint.Schauder.Compact
+import all FixedPoint.Schauder.CompactImage
+import all FixedPoint.Schauder.Projection
 -- The Challenge's theorems, as `FixedPointSolution.lean` restates and proves them.
 import all FixedPointSolution
 
@@ -39,11 +48,22 @@ meta def mainResults : List Name :=
    ``Brouwer.exists_fixedPoint_closedBall,
    ``Brouwer.exists_fixedPoint,
    ``Brouwer.exists_fixedPoint_continuousMap,
+   ``Brouwer.exists_fixedPoint_convexHull_of_finite,
    ``Brouwer.no_contDiffAt_retraction,
    ``Brouwer.exists_fixedPoint_of_contDiffAt,
-   ``BrouwerChallenge.exists_fixedPoint,
-   ``BrouwerChallenge.exists_fixedPoint_closedBall,
-   ``BrouwerChallenge.no_retraction]
+   ``Kakutani.exists_fixedPoint,
+   ``Kakutani.exists_fixedPoint_of_innerProductSpace,
+   ``Kakutani.exists_fixedPoint_simplex,
+   ``Kakutani.exists_fixedPoint_convexHull,
+   ``Schauder.exists_fixedPoint,
+   ``Schauder.exists_fixedPoint_continuousMap,
+   ``Schauder.exists_fixedPoint_of_isCompact_closure_image,
+   ``FixedPointChallenge.brouwer,
+   ``FixedPointChallenge.brouwer_closedBall,
+   ``FixedPointChallenge.no_retraction,
+   ``FixedPointChallenge.kakutani,
+   ``FixedPointChallenge.schauder,
+   ``FixedPointChallenge.schauder_of_isCompact_closure_image]
 
 /-- Lean's standard axioms. -/
 meta def standardAxioms : List Name := [``propext, ``Classical.choice, ``Quot.sound]
@@ -83,6 +103,9 @@ end Audit
 #print axioms Brouwer.exists_fixedPoint_closedBall
 #print axioms Brouwer.exists_fixedPoint
 #print axioms Brouwer.exists_fixedPoint_continuousMap
+#print axioms Kakutani.exists_fixedPoint
+#print axioms Schauder.exists_fixedPoint
+#print axioms Schauder.exists_fixedPoint_of_isCompact_closure_image
 
 #audit
 
@@ -109,3 +132,27 @@ example (V : Type) [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional
     ∀ s : Set V, Convex ℝ s → IsCompact s → s.Nonempty → ∀ f : V → V, MapsTo f s s →
       ContinuousOn f s → ∃ x ∈ s, f x = x :=
   fun _ hconv hcomp hne _ hmaps hf ↦ Brouwer.exists_fixedPoint hconv hcomp hne hmaps hf
+
+open Set in
+/-- Kakutani's theorem for compact convex sets, in the form `∀ s, … → ∃ x ∈ s, x ∈ φ x`. -/
+example (V : Type) [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V] :
+    ∀ s : Set V, Convex ℝ s → IsCompact s → s.Nonempty → ∀ φ : V → Set V,
+      (∀ x ∈ s, φ x ⊆ s) → (∀ x ∈ s, (φ x).Nonempty) → (∀ x ∈ s, Convex ℝ (φ x)) →
+        IsClosed {p : V × V | p.1 ∈ s ∧ p.2 ∈ φ p.1} → ∃ x ∈ s, x ∈ φ x :=
+  fun _ hconv hcomp hne _ hmaps hφne hφconv hgraph ↦
+    Kakutani.exists_fixedPoint hconv hcomp hne hmaps hφne hφconv hgraph
+
+open Set in
+/-- Schauder's theorem for compact convex sets of a real normed space, of any dimension. -/
+example (E : Type) [NormedAddCommGroup E] [NormedSpace ℝ E] :
+    ∀ s : Set E, Convex ℝ s → IsCompact s → s.Nonempty → ∀ f : E → E, MapsTo f s s →
+      ContinuousOn f s → ∃ x ∈ s, f x = x :=
+  fun _ hconv hcomp hne _ hmaps hf ↦ Schauder.exists_fixedPoint hconv hcomp hne hmaps hf
+
+open Set in
+/-- Schauder's theorem for closed convex sets of the Hilbert space `ℓ²(ℕ)` and maps with relatively
+compact image. -/
+example (s : Set (lp (fun _ : ℕ ↦ ℝ) 2)) (hconv : Convex ℝ s) (hcl : IsClosed s)
+    (hne : s.Nonempty) (f : lp (fun _ : ℕ ↦ ℝ) 2 → lp (fun _ : ℕ ↦ ℝ) 2) (hmaps : MapsTo f s s)
+    (hf : ContinuousOn f s) (himg : IsCompact (closure (f '' s))) : ∃ x ∈ s, f x = x :=
+  Schauder.exists_fixedPoint_of_isCompact_closure_image hconv hcl hne hmaps hf himg
