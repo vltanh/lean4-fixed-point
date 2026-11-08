@@ -69,8 +69,8 @@ sources:
     note: >-
       Source of the method: a simplification of Milnor's proof of Brouwer's theorem. The formal
       proof follows the standard form of the Milnor-Rogers argument, applied to a supposed C1
-      retraction of the closed ball onto its sphere (README, Method, step 1); the paper's text was
-      not compared with the formalization line by line.
+      retraction of the closed ball onto its sphere (docs/DETAILS.md, Method, step 1); the paper's
+      text was not compared with the formalization line by line.
     author_endorsement: "n/a"
   - title: "Change of variables in multiple integrals"
     authors:
