@@ -1,6 +1,11 @@
+/-
+Copyright (c) 2026 The-Anh Vu-Le. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: The-Anh Vu-Le
+-/
 module
 
-public import FixedPoint.Schauder.Compact
+public import FixedPoint.Schauder.Convex
 public import Mathlib.Analysis.Convex.TotallyBounded
 
 /-!

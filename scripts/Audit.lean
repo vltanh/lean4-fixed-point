@@ -6,7 +6,6 @@ public import Mathlib.Analysis.Normed.Lp.lpSpace
 -- One `import all` line per module of the library, so that proofs are visible to the axiom
 -- traversal (the module system hides them from a plain `import`). Generate the lines with
 --   find FixedPoint -name '*.lean' | sort | sed 's/\.lean$//; s#/#.#g; s/^/import all /'
-import all FixedPoint.Brouwer
 import all FixedPoint.Brouwer.Ball
 import all FixedPoint.Brouwer.Convex
 import all FixedPoint.Brouwer.DetPolynomial
@@ -14,11 +13,9 @@ import all FixedPoint.Brouwer.NearestPoint
 import all FixedPoint.Brouwer.Polytope
 import all FixedPoint.Brouwer.SmoothFixedPoint
 import all FixedPoint.Brouwer.SmoothRetraction
-import all FixedPoint.Kakutani
 import all FixedPoint.Kakutani.Convex
 import all FixedPoint.Kakutani.Simplex
-import all FixedPoint.Schauder
-import all FixedPoint.Schauder.Compact
+import all FixedPoint.Schauder.Convex
 import all FixedPoint.Schauder.CompactImage
 import all FixedPoint.Schauder.Projection
 -- The Challenge's theorems, as `FixedPointSolution.lean` restates and proves them.

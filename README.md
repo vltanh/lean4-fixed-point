@@ -20,13 +20,13 @@ statements in Lean, the method step by step and the departures from the sources 
 
 | Lean | Statement | Source |
 | --- | --- | --- |
-| [`Brouwer.exists_fixedPoint`](FixedPoint/Brouwer/Convex.lean#L46) | a map of a nonempty compact convex `s ⊆ V` into itself that is continuous on `s` has a fixed point in `s` | Brouwer (1911/1912) |
-| [`Brouwer.exists_fixedPoint_closedBall`](FixedPoint/Brouwer/Ball.lean#L130) | the same for a closed ball of a finite-dimensional real inner product space | Brouwer (1911/1912) |
-| [`Brouwer.no_retraction`](FixedPoint/Brouwer/Ball.lean#L159) | no map is continuous on the closed unit ball of a finite-dimensional real inner product space, maps it into the unit sphere and fixes every point of the sphere | equivalent to Brouwer's theorem |
-| [`Kakutani.exists_fixedPoint`](FixedPoint/Kakutani/Convex.lean#L79) | if `φ : V → Set V` sends each point of a nonempty compact convex `s ⊆ V` to a nonempty convex subset of `s`, and its graph over `s` is closed, then `x ∈ φ x` for some `x ∈ s` | Kakutani (1941) |
-| [`Kakutani.exists_fixedPoint_simplex`](FixedPoint/Kakutani/Simplex.lean#L187) | the same for a closed simplex | Kakutani (1941), Theorem 1 |
-| [`Schauder.exists_fixedPoint`](FixedPoint/Schauder/Compact.lean#L76) | a map of a nonempty compact convex `s ⊆ E` into itself that is continuous on `s` has a fixed point in `s` | Schauder (1930) |
-| [`Schauder.exists_fixedPoint_of_isCompact_closure_image`](FixedPoint/Schauder/CompactImage.lean#L45) | the same for a nonempty closed convex `s` of a Banach space and a map `f` with `f '' s` relatively compact | Schauder (1930) |
+| [`Brouwer.exists_fixedPoint`](FixedPoint/Brouwer/Convex.lean#L51) | a map of a nonempty compact convex `s ⊆ V` into itself that is continuous on `s` has a fixed point in `s` | Brouwer (1911/1912) |
+| [`Brouwer.exists_fixedPoint_closedBall`](FixedPoint/Brouwer/Ball.lean#L135) | the same for a closed ball of a finite-dimensional real inner product space | Brouwer (1911/1912) |
+| [`Brouwer.no_retraction`](FixedPoint/Brouwer/Ball.lean#L164) | no map is continuous on the closed unit ball of a finite-dimensional real inner product space, maps it into the unit sphere and fixes every point of the sphere | equivalent to Brouwer's theorem |
+| [`Kakutani.exists_fixedPoint`](FixedPoint/Kakutani/Convex.lean#L84) | if `φ : V → Set V` sends each point of a nonempty compact convex `s ⊆ V` to a nonempty convex subset of `s`, and its graph over `s` is closed, then `x ∈ φ x` for some `x ∈ s` | Kakutani (1941) |
+| [`Kakutani.exists_fixedPoint_simplex`](FixedPoint/Kakutani/Simplex.lean#L192) | the same for a closed simplex | Kakutani (1941), Theorem 1 |
+| [`Schauder.exists_fixedPoint`](FixedPoint/Schauder/Convex.lean#L81) | a map of a nonempty compact convex `s ⊆ E` into itself that is continuous on `s` has a fixed point in `s` | Schauder (1930) |
+| [`Schauder.exists_fixedPoint_of_isCompact_closure_image`](FixedPoint/Schauder/CompactImage.lean#L50) | the same for a nonempty closed convex `s` of a Banach space and a map `f` with `f '' s` relatively compact | Schauder (1930) |
 
 ```lean
 theorem Kakutani.exists_fixedPoint {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
@@ -73,8 +73,8 @@ git = "https://github.com/vltanh/lean4-fixed-point"
 rev = "<commit>"
 ```
 
-and import the modules you need, for instance `public import FixedPoint.Kakutani` in a module,
-or `import FixedPoint` for everything. The package requires Lean and Mathlib `v4.36.0-rc2`; your
+and import the modules you need, for instance `public import FixedPoint.Kakutani.Convex` in a
+module, or `import FixedPoint` for everything. The package requires Lean and Mathlib `v4.36.0-rc2`; your
 project should use the same Mathlib version.
 
 ## Building
@@ -86,7 +86,7 @@ lake env lean scripts/Audit.lean   # axioms
 lake env lake comparator --config=comparator.json   # needs bubblewrap; expect "Your solution is okay!"
 ```
 
-- The library has about 1,400 lines in 16 modules, and builds in about 20 seconds once Mathlib is
+- The library has about 1,400 lines in 13 modules, and builds in about 20 seconds once Mathlib is
   compiled.
 - The audit checks that the main theorems and every declaration of the library use only the
   standard axioms ([what it checks](docs/DETAILS.md#the-axiom-audit)).
@@ -96,9 +96,9 @@ lake env lake comparator --config=comparator.json   # needs bubblewrap; expect "
 | Path | Content |
 | --- | --- |
 | [`FixedPoint.lean`](FixedPoint.lean) | imports the whole library |
-| [`FixedPoint/Brouwer/`](FixedPoint/Brouwer) | Brouwer's theorem, in six modules ([each module](docs/DETAILS.md#files)) |
+| [`FixedPoint/Brouwer/`](FixedPoint/Brouwer) | Brouwer's theorem: `DetPolynomial`, `SmoothRetraction`, `SmoothFixedPoint`, `Ball`, `NearestPoint`, `Convex`, `Polytope` ([each module](docs/DETAILS.md#files)) |
 | [`FixedPoint/Kakutani/`](FixedPoint/Kakutani) | Kakutani's theorem: `Simplex` (Theorem 1), `Convex` (compact convex sets) |
-| [`FixedPoint/Schauder/`](FixedPoint/Schauder) | Schauder's theorem: `Projection`, `Polytope`, `Compact`, `CompactImage` |
+| [`FixedPoint/Schauder/`](FixedPoint/Schauder) | Schauder's theorem: `Projection`, `Convex`, `CompactImage` |
 | [`FixedPointChallenge.lean`](FixedPointChallenge.lean), [`FixedPointSolution.lean`](FixedPointSolution.lean), [`comparator.json`](comparator.json), [`formalization.yaml`](formalization.yaml) | Palomar: the statements of record, their proofs, the Comparator configuration, the metadata |
 | [`scripts/Audit.lean`](scripts/Audit.lean) | the axiom audit |
 | [`.github/workflows/`](.github/workflows) | CI: build, audit, import list of the audit, line lengths |

@@ -20,7 +20,7 @@ The declarations are in the namespace `Brouwer`. `E` is a finite-dimensional rea
 space (`[NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]`), for instance
 `EuclideanSpace ℝ (Fin n)`; `V` is a finite-dimensional real normed space.
 
-[`Brouwer.exists_fixedPoint`](../FixedPoint/Brouwer/Convex.lean#L46), Brouwer's theorem for
+[`Brouwer.exists_fixedPoint`](../FixedPoint/Brouwer/Convex.lean#L51), Brouwer's theorem for
 compact convex sets:
 
 ```lean
@@ -30,7 +30,7 @@ theorem exists_fixedPoint {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     ∃ x ∈ s, f x = x
 ```
 
-[`Brouwer.exists_fixedPoint_continuousMap`](../FixedPoint/Brouwer/Convex.lean#L65), the same for
+[`Brouwer.exists_fixedPoint_continuousMap`](../FixedPoint/Brouwer/Convex.lean#L70), the same for
 `C(s, s)`:
 
 ```lean
@@ -39,7 +39,7 @@ theorem exists_fixedPoint_continuousMap {V : Type*} [NormedAddCommGroup V] [Norm
     (hne : s.Nonempty) (f : C(s, s)) : ∃ x, f x = x
 ```
 
-[`Brouwer.exists_fixedPoint_closedBall`](../FixedPoint/Brouwer/Ball.lean#L130), Brouwer's theorem
+[`Brouwer.exists_fixedPoint_closedBall`](../FixedPoint/Brouwer/Ball.lean#L135), Brouwer's theorem
 for closed balls:
 
 ```lean
@@ -48,7 +48,7 @@ theorem exists_fixedPoint_closedBall {c : E} {R : ℝ} (hR : 0 ≤ R) {f : E →
     ∃ x ∈ closedBall c R, f x = x
 ```
 
-[`Brouwer.no_retraction`](../FixedPoint/Brouwer/Ball.lean#L159), the no-retraction theorem:
+[`Brouwer.no_retraction`](../FixedPoint/Brouwer/Ball.lean#L164), the no-retraction theorem:
 
 ```lean
 theorem no_retraction :
@@ -58,10 +58,10 @@ theorem no_retraction :
 
 On the way, for `C¹` maps:
 
-- [`Brouwer.no_contDiffAt_retraction`](../FixedPoint/Brouwer/SmoothRetraction.lean#L115): no map
+- [`Brouwer.no_contDiffAt_retraction`](../FixedPoint/Brouwer/SmoothRetraction.lean#L120): no map
   that is `C¹` at every point of the closed unit ball maps it into the sphere and fixes the
   sphere;
-- [`Brouwer.exists_fixedPoint_of_contDiffAt`](../FixedPoint/Brouwer/SmoothFixedPoint.lean#L96):
+- [`Brouwer.exists_fixedPoint_of_contDiffAt`](../FixedPoint/Brouwer/SmoothFixedPoint.lean#L101):
   a map that is `C¹` at every point of the closed unit ball and maps it into itself has a fixed
   point there.
 
@@ -72,10 +72,10 @@ The declarations are in the namespace `Kakutani`. A set-valued map is a function
 `{p : V × V | p.1 ∈ s ∧ p.2 ∈ φ p.1}`, is closed in `V × V` exactly when it is closed in `s × s`
 (`s` being closed), and exactly when `φ` is upper semicontinuous in Kakutani's sense: `xₙ → x` in
 `s`, `yₙ ∈ φ xₙ` and `yₙ → y` imply `y ∈ φ x`
-([`Kakutani.isClosed_graph_iff_seq`](../FixedPoint/Kakutani/Convex.lean#L102)). The values `φ x`
+([`Kakutani.isClosed_graph_iff_seq`](../FixedPoint/Kakutani/Convex.lean#L107)). The values `φ x`
 are then closed, and need not be required closed.
 
-[`Kakutani.exists_fixedPoint`](../FixedPoint/Kakutani/Convex.lean#L79), Kakutani's theorem for
+[`Kakutani.exists_fixedPoint`](../FixedPoint/Kakutani/Convex.lean#L84), Kakutani's theorem for
 compact convex sets of a finite-dimensional real normed space:
 
 ```lean
@@ -88,11 +88,11 @@ theorem exists_fixedPoint {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 On the way:
 
-- [`Kakutani.exists_fixedPoint_simplex`](../FixedPoint/Kakutani/Simplex.lean#L187), Kakutani's
+- [`Kakutani.exists_fixedPoint_simplex`](../FixedPoint/Kakutani/Simplex.lean#L192), Kakutani's
   Theorem 1: the same for a closed simplex `S.closedInterior`, `S : Affine.Simplex ℝ V r`;
-- [`Kakutani.exists_fixedPoint_convexHull`](../FixedPoint/Kakutani/Simplex.lean#L138): the same
+- [`Kakutani.exists_fixedPoint_convexHull`](../FixedPoint/Kakutani/Simplex.lean#L143): the same
   for the convex hull of a nonempty finite set;
-- [`Kakutani.exists_fixedPoint_of_innerProductSpace`](../FixedPoint/Kakutani/Convex.lean#L47),
+- [`Kakutani.exists_fixedPoint_of_innerProductSpace`](../FixedPoint/Kakutani/Convex.lean#L52),
   Kakutani's Corollary: the same for a finite-dimensional real inner product space, that is, a
   Euclidean space.
 
@@ -100,7 +100,7 @@ On the way:
 
 The declarations are in the namespace `Schauder`. `E` is a real normed space of any dimension.
 
-[`Schauder.exists_fixedPoint`](../FixedPoint/Schauder/Compact.lean#L76), Schauder's theorem for
+[`Schauder.exists_fixedPoint`](../FixedPoint/Schauder/Convex.lean#L81), Schauder's theorem for
 compact convex sets (Satz I); the space need not be complete. Schauder states Satz I for complete
 metric linear spaces, which need not be normed ([departures](#departures-from-the-sources)):
 
@@ -110,7 +110,7 @@ theorem exists_fixedPoint {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (hmaps : MapsTo f s s) (hf : ContinuousOn f s) : ∃ x ∈ s, f x = x
 ```
 
-[`Schauder.exists_fixedPoint_of_isCompact_closure_image`](../FixedPoint/Schauder/CompactImage.lean#L45),
+[`Schauder.exists_fixedPoint_of_isCompact_closure_image`](../FixedPoint/Schauder/CompactImage.lean#L50),
 Schauder's theorem for closed convex sets of a Banach space and maps with relatively compact image
 (Satz II; Schauder's "kompakt" is Fréchet's, that is, relatively compact):
 
@@ -123,11 +123,11 @@ theorem exists_fixedPoint_of_isCompact_closure_image {E : Type*} [NormedAddCommG
 
 On the way:
 
-- [`Schauder.exists_fixedPoint_continuousMap`](../FixedPoint/Schauder/Compact.lean#L91): the first
+- [`Schauder.exists_fixedPoint_continuousMap`](../FixedPoint/Schauder/Convex.lean#L96): the first
   form for `f : C(s, s)`;
-- [`Schauder.isCompact_closedConvexHull`](../FixedPoint/Schauder/CompactImage.lean#L37), Mazur's
+- [`Schauder.isCompact_closedConvexHull`](../FixedPoint/Schauder/CompactImage.lean#L42), Mazur's
   theorem: in a real Banach space, the closed convex hull of a totally bounded set is compact;
-- [`Brouwer.exists_fixedPoint_convexHull_of_finite`](../FixedPoint/Brouwer/Polytope.lean#L24):
+- [`Brouwer.exists_fixedPoint_convexHull_of_finite`](../FixedPoint/Brouwer/Polytope.lean#L29):
   Brouwer's theorem for the convex hull of a nonempty finite set in a real normed space of any
   dimension.
 
@@ -224,7 +224,7 @@ Kakutani's proof, with one construction replaced
 
 ([`Projection.lean`](../FixedPoint/Schauder/Projection.lean),
 [`Polytope.lean`](../FixedPoint/Brouwer/Polytope.lean),
-[`Compact.lean`](../FixedPoint/Schauder/Compact.lean),
+[`Convex.lean`](../FixedPoint/Schauder/Convex.lean),
 [`CompactImage.lean`](../FixedPoint/Schauder/CompactImage.lean))
 
 1. **Brouwer for polytopes** (`Brouwer.exists_fixedPoint_convexHull_of_finite`). The convex hull
@@ -375,7 +375,6 @@ native Coq/Rocq.
 | Path | Content |
 | --- | --- |
 | [`FixedPoint.lean`](../FixedPoint.lean) | imports the whole library |
-| [`FixedPoint/Brouwer.lean`](../FixedPoint/Brouwer.lean) | imports Brouwer's theorem and its lemmas |
 | [`FixedPoint/Brouwer/DetPolynomial.lean`](../FixedPoint/Brouwer/DetPolynomial.lean) | `det (1 + t A)` and its integrals are polynomials in `t`; `det (1 + A) > 0` for `‖A‖ < 1` |
 | [`FixedPoint/Brouwer/SmoothRetraction.lean`](../FixedPoint/Brouwer/SmoothRetraction.lean) | no `C¹` retraction of the closed unit ball onto the sphere |
 | [`FixedPoint/Brouwer/SmoothFixedPoint.lean`](../FixedPoint/Brouwer/SmoothFixedPoint.lean) | Brouwer's theorem for `C¹` maps of the closed unit ball |
@@ -383,12 +382,10 @@ native Coq/Rocq.
 | [`FixedPoint/Brouwer/NearestPoint.lean`](../FixedPoint/Brouwer/NearestPoint.lean) | the nearest-point retraction onto a closed convex set |
 | [`FixedPoint/Brouwer/Convex.lean`](../FixedPoint/Brouwer/Convex.lean) | Brouwer's theorem for compact convex sets |
 | [`FixedPoint/Brouwer/Polytope.lean`](../FixedPoint/Brouwer/Polytope.lean) | Brouwer's theorem for convex hulls of finite sets in a normed space of any dimension |
-| [`FixedPoint/Kakutani.lean`](../FixedPoint/Kakutani.lean) | imports Kakutani's theorem and its lemmas |
 | [`FixedPoint/Kakutani/Simplex.lean`](../FixedPoint/Kakutani/Simplex.lean) | Kakutani's Theorem 1: simplices and convex hulls of finite sets |
 | [`FixedPoint/Kakutani/Convex.lean`](../FixedPoint/Kakutani/Convex.lean) | Kakutani's theorem for compact convex sets; closed graph and upper semicontinuity |
-| [`FixedPoint/Schauder.lean`](../FixedPoint/Schauder.lean) | imports Schauder's theorem and its lemmas |
 | [`FixedPoint/Schauder/Projection.lean`](../FixedPoint/Schauder/Projection.lean) | Schauder's projection and its partition of unity |
-| [`FixedPoint/Schauder/Compact.lean`](../FixedPoint/Schauder/Compact.lean) | Schauder's theorem for compact convex sets |
+| [`FixedPoint/Schauder/Convex.lean`](../FixedPoint/Schauder/Convex.lean) | Schauder's theorem for compact convex sets |
 | [`FixedPoint/Schauder/CompactImage.lean`](../FixedPoint/Schauder/CompactImage.lean) | Mazur's theorem; Schauder's theorem for closed convex sets and maps with relatively compact image |
 | [`FixedPointChallenge.lean`](../FixedPointChallenge.lean), [`FixedPointSolution.lean`](../FixedPointSolution.lean), [`comparator.json`](../comparator.json), [`formalization.yaml`](../formalization.yaml) | Palomar: the statements of record, their proofs, the Comparator configuration, the metadata |
 | [`scripts/Audit.lean`](../scripts/Audit.lean) | the axiom audit |
