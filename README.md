@@ -5,7 +5,8 @@
 Fixed-point theorems in Lean 4 with Mathlib, each for a nonempty compact convex set `s`:
 
 - **Brouwer's theorem**: a continuous map of `s` into itself has a fixed point, in a
-  finite-dimensional real normed space; with the no-retraction theorem.
+  finite-dimensional real normed space; with the no-retraction theorem. Two proofs: an analytic
+  one, and one through Sperner's lemma and the lemma of Knaster, Kuratowski and Mazurkiewicz.
 - **Kakutani's theorem**: a set-valued map `φ` that sends each point of `s` to a nonempty convex
   subset of `s`, and has a closed graph, has a point `x ∈ φ x`, in a finite-dimensional real
   normed space.
@@ -24,12 +25,14 @@ statements in Lean, the method step by step and the departures from the sources 
 
 | Theorem | Lean | Statement | Source |
 | --- | --- | --- | --- |
-| Brouwer | [`Brouwer.exists_fixedPoint`](FixedPoint/Brouwer/Convex.lean#L52) | a map of a nonempty compact convex `s ⊆ V` into itself that is continuous on `s` has a fixed point in `s` | Brouwer (1911/1912) |
+| Brouwer | [`Brouwer.exists_fixedPoint`](FixedPoint/Brouwer/Convex.lean#L54) | a map of a nonempty compact convex `s ⊆ V` into itself that is continuous on `s` has a fixed point in `s` | Brouwer (1911/1912) |
 | | [`Brouwer.exists_fixedPoint_closedBall`](FixedPoint/Brouwer/Ball.lean#L135) | the same for a closed ball of a finite-dimensional real inner product space | Brouwer (1911/1912) |
 | | [`Brouwer.no_retraction`](FixedPoint/Brouwer/Ball.lean#L164) | no map is continuous on the closed unit ball of a finite-dimensional real inner product space, maps it into the unit sphere and fixes every point of the sphere | equivalent to Brouwer's theorem |
-| Kakutani | [`Kakutani.exists_fixedPoint`](FixedPoint/Kakutani/Convex.lean#L132) | if `φ : V → Set V` sends each point of a nonempty compact convex `s ⊆ V` to a nonempty convex subset of `s`, and its graph over `s` is closed, then `x ∈ φ x` for some `x ∈ s` | Kakutani (1941), Corollary |
+| | [`Brouwer.KKM.exists_fixedPoint`](FixedPoint/Brouwer/KKM.lean#L190) | the same, by the second proof | Knaster, Kuratowski, Mazurkiewicz (1929) |
+| | [`Brouwer.KKM.exists_mem_iInter`](FixedPoint/Brouwer/KKM.lean#L60) | the KKM lemma: closed sets covering each face `[e i, i ∈ I]` of the standard simplex by the `F i`, `i ∈ I`, have a common point | Knaster, Kuratowski, Mazurkiewicz (1929) |
+| Kakutani | [`Kakutani.exists_fixedPoint`](FixedPoint/Kakutani/Convex.lean#L81) | if `φ : V → Set V` sends each point of a nonempty compact convex `s ⊆ V` to a nonempty convex subset of `s`, and its graph over `s` is closed, then `x ∈ φ x` for some `x ∈ s` | Kakutani (1941), Corollary |
 | | [`Kakutani.exists_fixedPoint_simplex`](FixedPoint/Kakutani/Simplex.lean#L147) | the same for a closed simplex | Kakutani (1941), Theorem 1 |
-| Schauder | [`Schauder.exists_fixedPoint`](FixedPoint/Schauder/Convex.lean#L79) | a map of a nonempty compact convex `s ⊆ E` into itself that is continuous on `s` has a fixed point in `s` | Schauder (1930), Satz I |
+| Schauder | [`Schauder.exists_fixedPoint`](FixedPoint/Schauder/Convex.lean#L178) | a map of a nonempty compact convex `s ⊆ E` into itself that is continuous on `s` has a fixed point in `s` | Schauder (1930), Satz I |
 | | [`Schauder.exists_fixedPoint_of_isCompact_closure_image`](FixedPoint/Schauder/CompactImage.lean#L50) | the same for a nonempty closed convex `s` of a Banach space and a map `f` with `f '' s` relatively compact | Schauder (1930), Satz II |
 
 The three theorems for compact convex sets:
@@ -56,8 +59,9 @@ theorem Schauder.exists_fixedPoint {E : Type*} [NormedAddCommGroup E] [NormedSpa
 | Theorem | Proof | Departure from the source |
 | --- | --- | --- |
 | Brouwer | Milnor–Rogers: no `C¹` retraction, by the change of variables formula; then smoothing, and the nearest-point retraction for compact convex sets | the whole proof: Brouwer's own is topological |
-| Kakutani | Kakutani's: piecewise-linear maps on barycentric subdivisions of a simplex, Brouwer, a limit; an enclosing simplex and a retraction for compact convex sets. A second proof replaces the subdivisions by a partition of unity | none in the argument: the subdivisions are built on the standard simplex and carried to other simplices by a linear map, and the retraction, which Kakutani leaves open, is the nearest-point map |
-| Schauder | Schauder's: Brouwer on the convex hull of a finite `ε`-net, a point moved by less than `ε`, compactness; Mazur's theorem for the second form | the approximating map is a projection, not a simplicial approximation; Satz I is stated for normed spaces, not Schauder's complete metric linear spaces |
+| Brouwer, second proof | Knaster–Kuratowski–Mazurkiewicz: Sperner's lemma, the KKM lemma, then Brouwer for the simplex; an enclosing simplex for compact convex sets | KKM subdivide the simplex in any fine way; here, barycentric subdivisions |
+| Kakutani | Kakutani's: piecewise-linear maps on barycentric subdivisions of a simplex, Brouwer (KKM's proof, which he cites), a limit; an enclosing simplex and a retraction for compact convex sets. A second proof replaces the subdivisions by a partition of unity | none in the argument: the subdivisions are built on the standard simplex and carried to other simplices by a linear map, and the retraction, which Kakutani leaves open, is the nearest-point map |
+| Schauder | Schauder's: a simplicial approximation of `f` on a fine triangulation of the convex hull of a finite `ε`-net, Brouwer (KKM's proof, which he cites), a vertex moved by less than `3ε`, compactness; Mazur's theorem for the second form. A second proof uses Schauder's projection | the triangulation is carried from a simplex onto the hull by a linear map; Satz I is stated for normed spaces, not Schauder's complete metric linear spaces |
 
 Reasons, and the results of the three papers that are not formalized:
 [docs/DETAILS.md](docs/DETAILS.md#departures-from-the-sources).
@@ -97,7 +101,7 @@ lake env lean scripts/Audit.lean   # axioms
 lake env lake comparator --config=comparator.json   # needs bubblewrap; expect "Your solution is okay!"
 ```
 
-- The library has about 2,200 lines in 17 modules, and builds in about 20 seconds once Mathlib is
+- The library has about 3,200 lines in 23 modules, and builds in about 30 seconds once Mathlib is
   compiled.
 - The audit checks that the main theorems and every declaration of the library use only the
   standard axioms ([what it checks](docs/DETAILS.md#the-axiom-audit)).
@@ -107,10 +111,10 @@ lake env lake comparator --config=comparator.json   # needs bubblewrap; expect "
 | Path | Content |
 | --- | --- |
 | [`FixedPoint.lean`](FixedPoint.lean) | imports the whole library ([each module](docs/DETAILS.md#files)) |
-| [`FixedPoint/Common/`](FixedPoint/Common) | shared tools: `ContinuousMap` (the `C(s, s)` form of a fixed-point theorem), `NearestPoint` (the nearest-point retraction), `SchauderProjection` (Schauder's projection and its partition of unity), `Subdivision` (iterated barycentric subdivisions of the standard simplex) |
-| [`FixedPoint/Brouwer/`](FixedPoint/Brouwer) | Brouwer's theorem: `DetPolynomial`, `SmoothRetraction`, `SmoothFixedPoint`, `Ball`, `Convex` (compact convex sets), `Polytope` (convex hulls of finite sets, any dimension) |
+| [`FixedPoint/Common/`](FixedPoint/Common) | shared tools: `ContinuousMap` (the `C(s, s)` form of a fixed-point theorem), `EnclosingSimplex` (a simplex around a bounded set), `Euclidean` (from Euclidean to normed spaces), `NearestPoint` (the nearest-point retraction), `SchauderProjection` (Schauder's projection and its partition of unity), `Subdivision` (iterated barycentric subdivisions of the standard simplex), `Sperner` (Sperner's lemma) |
+| [`FixedPoint/Brouwer/`](FixedPoint/Brouwer) | Brouwer's theorem: `DetPolynomial`, `SmoothRetraction`, `SmoothFixedPoint`, `Ball`, `Convex` (compact convex sets), `Polytope` (convex hulls of finite sets, any dimension), `KKM` (the second proof) |
 | [`FixedPoint/Kakutani/`](FixedPoint/Kakutani) | Kakutani's theorem: `Limit`, `Simplex` (Theorem 1), `Convex` (compact convex sets), `Selection` (a second proof) |
-| [`FixedPoint/Schauder/`](FixedPoint/Schauder) | Schauder's theorem: `Convex` (compact convex sets), `CompactImage` (relatively compact image) |
+| [`FixedPoint/Schauder/`](FixedPoint/Schauder) | Schauder's theorem: `Limit`, `Convex` (compact convex sets), `Projection` (a second proof), `CompactImage` (relatively compact image) |
 | [`FixedPointChallenge.lean`](FixedPointChallenge.lean), [`FixedPointSolution.lean`](FixedPointSolution.lean), [`comparator.json`](comparator.json), [`formalization.yaml`](formalization.yaml) | Palomar: the statements of record, their proofs, the Comparator configuration, the metadata |
 | [`scripts/Audit.lean`](scripts/Audit.lean) | the axiom audit |
 | [`.github/workflows/`](.github/workflows) | CI: build, audit, import list of the audit, line lengths |
@@ -122,7 +126,7 @@ formal proofs ([the lists, with methods and links](docs/DETAILS.md#other-formali
 
 | Theorem | Other formal proofs |
 | --- | --- |
-| Brouwer | Lean 4, Lean 3, HOL Light, Isabelle/HOL, Mizar, Coq (the plane) |
+| Brouwer | Lean 4, Lean 3, HOL Light, Isabelle/HOL, Mizar, Coq (the plane); the KKM lemma in Lean 4, Sperner's lemma in Mizar |
 | Kakutani | Lean 4 |
 | Schauder | Lean 4; HOL Light (finite dimension) |
 
@@ -140,6 +144,12 @@ Brouwer:
   [doi:10.1080/00029890.1980.11995082](https://doi.org/10.1080/00029890.1980.11995082).
 - P. D. Lax, *Change of variables in multiple integrals*, Amer. Math. Monthly 106 (1999), 497–501,
   [doi:10.1080/00029890.1999.12005078](https://doi.org/10.1080/00029890.1999.12005078).
+- E. Sperner, *Neuer Beweis für die Invarianz der Dimensionszahl und des Gebietes*, Abh. Math.
+  Sem. Univ. Hamburg 6 (1928), 265–272,
+  [doi:10.1007/BF02940617](https://doi.org/10.1007/BF02940617).
+- B. Knaster, C. Kuratowski, S. Mazurkiewicz, *Ein Beweis des Fixpunktsatzes für n-dimensionale
+  Simplexe*, Fund. Math. 14 (1929), 132–137,
+  [doi:10.4064/fm-14-1-132-137](https://doi.org/10.4064/fm-14-1-132-137).
 
 Kakutani:
 

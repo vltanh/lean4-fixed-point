@@ -5,7 +5,7 @@ Authors: The-Anh Vu-Le
 -/
 module
 
-public import FixedPoint.Brouwer.Convex
+public import FixedPoint.Brouwer.KKM
 public import FixedPoint.Kakutani.Limit
 public import FixedPoint.Common.Subdivision
 public import Mathlib.Data.Set.Finite.Lemmas
@@ -37,7 +37,8 @@ Kakutani's proof, on the standard simplex `Δ`.
 1. Pick `y v ∈ φ v` for each `v ∈ Δ`. The map `φₙ = BarycentricSubdivision.interp n y`, linear on
    each simplex of the `n`-th barycentric subdivision of `Δ` with the value `y v` at each vertex
    `v`, is continuous and maps `Δ` into itself, so it has a fixed point `xₙ` by Brouwer's theorem
-   (`Brouwer.exists_fixedPoint`).
+   for the simplex, in the proof of Knaster, Kuratowski and Mazurkiewicz, Kakutani's reference [1]
+   (`Brouwer.KKM.exists_fixedPoint_stdSimplex`).
 2. If `xₙ` lies in the simplex of the subdivision with vertices `xₙᵢ` and `xₙ = ∑ λₙᵢ xₙᵢ`, then
    `xₙ = φₙ xₙ = ∑ λₙᵢ y (xₙᵢ)`, with `y (xₙᵢ) ∈ φ (xₙᵢ)`, and the vertices are within
    `2 (r / (r + 1)) ^ n` of `xₙ` (`BarycentricSubdivision.dist_verts_le`).
@@ -54,8 +55,7 @@ points too.
 Differences from Kakutani's text, none of them in the argument: he subdivides `S` itself, where
 the proof is carried out on `Δ` and transported by `A`; he chooses the points of `φ` at the
 vertices of each subdivision separately, where one choice `y v ∈ φ v` serves for all `n`; he takes
-successive subsequences, where one subsequence serves; and Brouwer's theorem is applied in its form
-for compact convex sets (`Brouwer.exists_fixedPoint`).
+successive subsequences, where one subsequence serves.
 -/
 
 @[expose] public section
@@ -76,7 +76,7 @@ theorem exists_fixedPoint_stdSimplex {r : ℕ} {φ : (Fin (r + 1) → ℝ) → S
   choose! y hy using hφne
   -- Step 1: `φₙ = interp n y` has a fixed point `x n`, by Brouwer's theorem
   have hfix : ∀ n : ℕ, ∃ x ∈ simplex r, interp n y x = x := fun n ↦
-    Brouwer.exists_fixedPoint (convex_simplex r) (isCompact_simplex r) ⟨_, single_mem_simplex 0⟩
+    Brouwer.KKM.exists_fixedPoint_stdSimplex
       (fun x hx ↦ (convex_simplex r).sum_mem (fun k _ ↦ (coords_mem n hx).1 k)
         (coords_mem n hx).2 fun k _ ↦ hmaps _ (verts_mem n hx k) (hy _ (verts_mem n hx k)))
       (continuousOn_interp n y)

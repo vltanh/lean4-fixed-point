@@ -2,7 +2,7 @@
 version: "v0.4"
 
 project:
-  name: "The fixed-point theorems of Brouwer, Kakutani and Schauder, with an analytic proof of Brouwer's theorem"
+  name: "The fixed-point theorems of Brouwer, Kakutani and Schauder, with an analytic proof of Brouwer's theorem and one through Sperner's lemma"
   description: >-
     A Lean 4 / Mathlib proof of Brouwer's fixed-point theorem in every finite dimension: a
     continuous map of a nonempty compact convex subset of a finite-dimensional real normed space
@@ -21,7 +21,10 @@ project:
     compact convex sets through the nearest-point retraction. Brouwer's theorem has earlier formal
     proofs in HOL Light, Isabelle/HOL and Mizar, in Coq for the plane, in Lean 3 through singular
     homology, and in Lean 4 for the plane and for the standard simplex; this proof is independent
-    of them.
+    of them. A second proof follows Knaster, Kuratowski and Mazurkiewicz (1929): Sperner's lemma for
+    the iterated barycentric subdivisions of the simplex, by counting facets mod 2, then the KKM
+    lemma and Brouwer's theorem for the simplex; Kakutani's and Schauder's proofs use this one, the
+    proof of Brouwer's theorem that both papers cite.
 
 
     Kakutani's fixed-point theorem (1941) and Schauder's fixed-point theorem (1930) are derived from
@@ -32,9 +35,10 @@ project:
     for general compact convex sets), and a second time through a partition of unity.
     Schauder's: a continuous self-map of a nonempty compact convex subset of a real normed space of
     any dimension has a fixed point, and so does a continuous self-map of a nonempty closed convex
-    subset of a real Banach space with relatively compact image; it is proved through Schauder's
-    projection onto the convex hull of a finite epsilon-net, Brouwer's theorem in its
-    finite-dimensional span, and Mazur's theorem for the second form.
+    subset of a real Banach space with relatively compact image; it is proved by Schauder's
+    argument, a simplicial approximation on a fine triangulation of the convex hull of a finite
+    epsilon-net and Brouwer's theorem, then compactness, with Mazur's theorem for the second form,
+    and a second time through Schauder's projection.
   authors:
     - "The-Anh Vu-Le"
   license: "Apache-2.0"
@@ -85,6 +89,35 @@ sources:
       retraction of the closed ball onto its sphere (docs/DETAILS.md, Method, step 1); the paper's
       text was not compared with the formalization line by line.
     author_endorsement: "n/a"
+  - title: "Ein Beweis des Fixpunktsatzes für n-dimensionale Simplexe"
+    authors:
+      - "Bronisław Knaster"
+      - "Kazimierz Kuratowski"
+      - "Stefan Mazurkiewicz"
+    id: "doi:10.4064/fm-14-1-132-137"
+    type: "paper"
+    location: "Fund. Math. 14 (1929), 132-137"
+    relationship: "formalizes"
+    note: >-
+      The second proof of Brouwer's theorem: the Hilfssatz (Sperner's lemma, odd count, by counting
+      facets mod 2 and induction on the dimension), the Satz (the KKM lemma) and Brouwer's theorem
+      for the simplex. Formalized by their argument for the iterated barycentric subdivisions, where
+      KKM allow any fine simplicial subdivision and assume that one exists; the facts they assert
+      about it are replaced, mod 2, by a pairing of the inner facets and the identification of the
+      boundary facets with the subdivisions of the faces, both proved. Their sharpened theorem (boundary mapped into the simplex) and the remarks of §4 are
+      not formalized. Compared with a scan of the printed pages.
+    author_endorsement: "n/a"
+  - title: "Neuer Beweis für die Invarianz der Dimensionszahl und des Gebietes"
+    authors:
+      - "Emanuel Sperner"
+    id: "doi:10.1007/BF02940617"
+    type: "paper"
+    location: "Abh. Math. Sem. Univ. Hamburg 6 (1928), 265-272"
+    relationship: "other"
+    note: >-
+      Sperner's lemma, which KKM extract from this paper and re-prove; the formalization follows
+      KKM's form of the lemma and of its proof. Only the first two pages were read.
+    author_endorsement: "n/a"
   - title: "A generalization of Brouwer's fixed point theorem"
     authors:
       - "Shizuo Kakutani"
@@ -96,7 +129,8 @@ sources:
       Kakutani's fixed-point theorem: Theorem 1 (closed simplices) and its Corollary (bounded closed
       convex sets of a Euclidean space), with his upper semicontinuity (closed graph). Proved by
       Kakutani's argument, with barycentric subdivisions of the standard simplex carried to other
-      simplices by a linear map (fidelity); a second proof uses a partition of unity. Theorem 2 (von Neumann's lemma) and Theorem 3
+      simplices by a linear map, and Brouwer's theorem in the proof of his reference [1], KKM
+      (fidelity); a second proof uses a partition of unity. Theorem 2 (von Neumann's lemma) and Theorem 3
       (the minimax theorem) are not formalized. Compared with a scan of the printed pages.
     author_endorsement: "n/a"
   - title: "Der Fixpunktsatz in Funktionalräumen"
@@ -110,9 +144,9 @@ sources:
       Schauder's fixed-point theorem: Satz I for compact convex sets, formalized for real normed
       spaces (Schauder states it for complete metric linear spaces, where his proof has a gap
       outside the locally convex case), and Satz II for closed convex sets of Banach spaces and
-      maps with relatively compact image. Satz I is proved along Schauder's outline with a
-      projection in place of his simplicial approximation, Satz II by Schauder's argument
-      (fidelity). Satz III (weak continuity) is not formalized. Compared with a scan of the printed
+      maps with relatively compact image. Both are proved by Schauder's arguments, the
+      triangulation of the convex hull of the net carried from a simplex by a linear map
+      (fidelity); a second proof of Satz I uses Schauder's projection. Satz III (weak continuity) is not formalized. Compared with a scan of the printed
       pages.
     author_endorsement: "n/a"
   - title: "Über die kleinste konvexe Menge, die eine gegebene kompakte Menge enthält"
@@ -254,6 +288,18 @@ related_formalizations:
     note: >-
       Lean 4 / Mathlib (eco-lean): Kakutani's theorem in finite dimension at least 2, closed graph,
       compact convex nonempty values. This work does not use or adapt it.
+  - id: "https://github.com/facebookresearch/atlas-lean/blob/18d1aa399b6ebaa8cd9c4a48795b43f6734c3785/MathlibExt/Analysis/Convex/KKM.lean"
+    relationship: "independent"
+    note: >-
+      Lean 4 / Mathlib (facebookresearch/atlas-lean): the KKM lemma, through Sperner's lemma on
+      iterated barycentric subdivisions, without a derivation of Brouwer's theorem. This work does
+      not use or adapt it.
+  - id: "doi:10.2478/v10037-010-0022-x"
+    relationship: "independent"
+    note: >-
+      Mizar (Karol Pąk, Sperner's Lemma, Formalized Mathematics 18 (2010), 189-196): Sperner's lemma
+      for barycentric subdivisions of a simplex, used for Brouwer's theorem for simplices
+      (Formalized Mathematics 19 (2011), 145-150). This work does not use or adapt it.
 
 status:
   scope: >-
@@ -263,20 +309,23 @@ status:
     the no-retraction theorem for the closed unit ball of a finite-dimensional real inner product
     space; and, on the way, the same two theorems for maps that are C1 at every point of the closed
     unit ball, and Brouwer's theorem for convex hulls of finite sets in real normed spaces of any
-    dimension. Kakutani's fixed-point theorem for set-valued maps with closed graph and nonempty
+    dimension; a second proof of Brouwer's theorem for compact convex sets, through Sperner's lemma
+    for iterated barycentric subdivisions and the Knaster-Kuratowski-Mazurkiewicz lemma, both
+    formalized. Kakutani's fixed-point theorem for set-valued maps with closed graph and nonempty
     convex values on nonempty compact convex subsets of finite-dimensional real normed spaces, for
     closed simplices (Kakutani's Theorem 1) and for compact convex subsets of finite-dimensional
     real inner product spaces (his Corollary), with the equivalence of a closed graph and Kakutani's
     sequential upper semicontinuity, proved by Kakutani's argument on iterated barycentric
     subdivisions of the standard simplex (with the continuity of piecewise-linear interpolation
     and the decay of the mesh) and again through a partition of unity. Schauder's fixed-point
-    theorem for nonempty compact convex
-    subsets of real normed spaces of any dimension, complete or not, and for nonempty closed convex
-    subsets of real Banach spaces and maps with relatively compact image; Mazur's theorem on the
-    compactness of closed convex hulls, used for the latter. The Challenge states Brouwer's theorem
+    theorem for nonempty compact convex subsets of real normed spaces of any dimension, complete or
+    not, by Schauder's simplicial approximation and again through Schauder's projection, and for
+    nonempty closed convex subsets of real Banach spaces and maps with relatively compact image;
+    Mazur's theorem on the compactness of closed convex hulls, used for the latter. The Challenge states Brouwer's theorem
     for compact convex sets and for closed balls, the no-retraction theorem, Kakutani's theorem and
     the two forms of Schauder's theorem. Not formalized: Milnor's hairy ball theorem; Brouwer's
-    theorem for spaces that are only homeomorphic to a ball; Kakutani's Theorem 2 (von Neumann's
+    theorem for spaces that are only homeomorphic to a ball; KKM's sharpened fixed-point theorem
+    and the remarks of their section 4; Kakutani's Theorem 2 (von Neumann's
     intersection lemma) and Theorem 3 (the minimax theorem); Schauder's Satz III (weakly continuous
     maps in separable Banach spaces) and his Satz I beyond locally convex spaces (Schauder's
     problem, Scottish Book Problem 54); the extensions of
@@ -353,14 +402,34 @@ fidelity:
     complete or not, where Schauder's argument is valid. Satz II is stated as Schauder does, for
     real Banach spaces and closed convex sets H with F(H) relatively compact (Schauder's
     "kompakt"). Proofs: Satz II is proved as Schauder does, by Mazur's theorem (Schauder's
-    Hilfssatz II) and Satz I. For Satz I the formalization follows Schauder's outline (a finite
-    epsilon-net, Brouwer's theorem on its convex hull, a point moved by little, compactness) with
-    one departure: Schauder triangulates the convex hull of the net and approximates F by a
-    simplicial map sending each vertex d to a point of the net within epsilon of F(d), while the
-    formalization composes F with the projection onto the hull given by the partition of unity
-    max(0, epsilon - |x - c|), the Schauder projection of later expositions, which is not in the
-    paper. Reason: Mathlib has no triangulations of polytopes or simplicial approximation.
-    Brouwer's theorem on the hull is applied in the finite-dimensional span of the net.
+    Hilfssatz II) and Satz I. Satz I is proved by Schauder's argument: a finite epsilon-net, a
+    fine triangulation of its convex hull H, the simplicial approximation of F sending each vertex d
+    to a point of the net within epsilon of F(d), Brouwer's theorem (in KKM's proof, which Schauder
+    cites), a vertex moved by less than 3 epsilon, compactness. One change of coordinates: the
+    triangulation is the barycentric subdivision of the simplex whose vertices map to the points
+    of the net, carried onto H by the linear map u -> sum u_k xi_k; when the points of the net are
+    affinely dependent its images are degenerate simplices of H. A slip in Schauder's proof: his
+    estimate (4), that the simplicial map moves x and the vertex d less than epsilon apart, does
+    not follow from his condition (1) and Hilfssatz I as written, since the values of the map at
+    the vertices are points of the net within 2 epsilon + min(epsilon, delta(n, epsilon)) of each
+    other; the argument survives with a larger constant, and the formalization reaches his bound
+    3 epsilon by estimating the distance from x to F(d) directly. A second proof
+    (Schauder.Projection.exists_fixedPoint) replaces the simplicial approximation by Schauder's
+    projection, which is not in the paper.
+
+
+    Brouwer, second proof. The proof of Knaster, Kuratowski and Mazurkiewicz is followed: Sperner's
+    lemma by counting facets labeled 0, ..., r - 1 mod 2 and induction on the dimension, the KKM
+    lemma with the labeling by a set containing the point among those of its carrier face, and
+    Brouwer's theorem for the simplex with A_i = {x | f(x)_i <= x_i}. KKM allow any simplicial
+    subdivision of small mesh and assume that one exists; the formalization uses the iterated
+    barycentric subdivisions. KKM assert that each facet inside the simplex lies in two simplices
+    and that the subdivision restricts to the faces; mod 2, what their count needs is proved: the
+    pieces of sigma and sigma * swap k (k + 1) agree on their k-th facet, which pairs the facets
+    inside, and the boundary facets form the subdivisions of the faces. Brouwer's theorem for compact convex
+    sets follows through an enclosing simplex with continuous barycentric coordinates and the
+    nearest-point retraction. The audit checks that this proof, and the proofs of Kakutani's and
+    Schauder's theorems, use nothing of the analytic proof.
 
 review:
   status: "unchecked"
@@ -368,8 +437,9 @@ review:
     - "none"
   notes: >-
     No person has reviewed the statements or the proofs. A separate Claude agent reviewed the
-    statements and proofs of Kakutani's and Schauder's theorems against the theorems' standard
-    forms and Kakutani's paper; its findings were addressed. Lean's kernel checks the proofs, and
+    statements and proofs of Kakutani's and Schauder's theorems, and of the second proof of
+    Brouwer's theorem, against the theorems' standard forms and scans of Kakutani's, Schauder's and
+    KKM's papers; its findings were addressed. Lean's kernel checks the proofs, and
     Comparator, with Lean's kernel and the NanoDa kernel, checks that FixedPointSolution.lean proves
     the statements of FixedPointChallenge.lean using only propext, Classical.choice and Quot.sound.
 

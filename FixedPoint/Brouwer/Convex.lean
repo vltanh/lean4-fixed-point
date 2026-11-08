@@ -8,6 +8,7 @@ module
 public import FixedPoint.Brouwer.Ball
 public import FixedPoint.Common.NearestPoint
 public import FixedPoint.Common.ContinuousMap
+public import FixedPoint.Common.Euclidean
 
 /-!
 # Brouwer's fixed-point theorem for compact convex sets
@@ -19,9 +20,10 @@ public import FixedPoint.Common.ContinuousMap
 
 ## Proof
 
-Through a linear isomorphism with `EuclideanSpace ℝ (Fin n)` we may assume that the space has an
-inner product. There, `s` lies in a closed ball `B̄`, and is a retract of the whole space through
-the nearest-point map `π` (`NearestPoint.exists_lipschitzWith_retraction`). The map `f ∘ π`
+Through a linear isomorphism with `EuclideanSpace ℝ (Fin n)`
+(`FixedPoint.exists_fixedPoint_of_euclidean`) we may assume that the space has an inner product.
+There, `s` lies in a closed ball `B̄`, and is a retract of the whole space through the
+nearest-point map `π` (`NearestPoint.exists_lipschitzWith_retraction`). The map `f ∘ π`
 sends `B̄` continuously into `s ⊆ B̄`, so has a fixed point `x`
 (`Brouwer.exists_fixedPoint_closedBall`); then `x = f (π x) ∈ s`, so `π x = x` and `f x = x`.
 -/
@@ -52,19 +54,10 @@ continuous on a nonempty compact convex set `s` and maps `s` into itself has a f
 theorem exists_fixedPoint {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {s : Set V} (hconv : Convex ℝ s) (hcomp : IsCompact s)
     (hne : s.Nonempty) {f : V → V} (hmaps : MapsTo f s s) (hf : ContinuousOn f s) :
-    ∃ x ∈ s, f x = x := by
-  let e : V ≃L[ℝ] EuclideanSpace ℝ (Fin (Module.finrank ℝ V)) :=
-    ContinuousLinearEquiv.ofFinrankEq (by simp)
-  have hmaps' : MapsTo (fun y ↦ e (f (e.symm y))) (e '' s) (e '' s) := by
-    rintro y ⟨x, hx, rfl⟩
-    exact ⟨f x, hmaps hx, by simp⟩
-  have hf' : ContinuousOn (fun y ↦ e (f (e.symm y))) (e '' s) :=
-    e.continuous.comp_continuousOn (hf.comp e.symm.continuous.continuousOn
-      (by rintro y ⟨x, hx, rfl⟩; simpa using hx))
-  obtain ⟨y, ⟨x, hx, rfl⟩, hfy⟩ := exists_fixedPoint_of_innerProductSpace
-    (hconv.linear_image (e : V →ₗ[ℝ] EuclideanSpace ℝ (Fin (Module.finrank ℝ V))))
-    (hcomp.image e.continuous) (hne.image e) hmaps' hf'
-  exact ⟨x, hx, e.injective (by simpa using hfy)⟩
+    ∃ x ∈ s, f x = x :=
+  FixedPoint.exists_fixedPoint_of_euclidean
+    (fun _ hconv hcomp hne _ hmaps hf ↦ exists_fixedPoint_of_innerProductSpace hconv hcomp hne
+      hmaps hf) hconv hcomp hne hmaps hf
 
 /-- **Brouwer's fixed-point theorem** for a continuous self-map of a nonempty compact convex set
 of a finite-dimensional real normed space. -/

@@ -9,19 +9,25 @@ public import Mathlib.Analysis.Normed.Lp.lpSpace
 import all FixedPoint.Brouwer.Ball
 import all FixedPoint.Brouwer.Convex
 import all FixedPoint.Brouwer.DetPolynomial
-import all FixedPoint.Common.ContinuousMap
-import all FixedPoint.Common.NearestPoint
+import all FixedPoint.Brouwer.KKM
 import all FixedPoint.Brouwer.Polytope
 import all FixedPoint.Brouwer.SmoothFixedPoint
 import all FixedPoint.Brouwer.SmoothRetraction
+import all FixedPoint.Common.ContinuousMap
+import all FixedPoint.Common.EnclosingSimplex
+import all FixedPoint.Common.Euclidean
+import all FixedPoint.Common.NearestPoint
+import all FixedPoint.Common.SchauderProjection
+import all FixedPoint.Common.Sperner
+import all FixedPoint.Common.Subdivision
 import all FixedPoint.Kakutani.Convex
 import all FixedPoint.Kakutani.Limit
 import all FixedPoint.Kakutani.Selection
 import all FixedPoint.Kakutani.Simplex
-import all FixedPoint.Schauder.Convex
 import all FixedPoint.Schauder.CompactImage
-import all FixedPoint.Common.SchauderProjection
-import all FixedPoint.Common.Subdivision
+import all FixedPoint.Schauder.Convex
+import all FixedPoint.Schauder.Limit
+import all FixedPoint.Schauder.Projection
 -- The Challenge's theorems, as `FixedPointSolution.lean` restates and proves them.
 import all FixedPointSolution
 
@@ -50,6 +56,9 @@ meta def mainResults : List Name :=
    ``Brouwer.exists_fixedPoint,
    ``Brouwer.exists_fixedPoint_continuousMap,
    ``Brouwer.exists_fixedPoint_convexHull_of_finite,
+   ``Brouwer.KKM.exists_fixedPoint,
+   ``Brouwer.KKM.exists_mem_iInter,
+   ``Sperner.count_eq_one,
    ``Brouwer.no_contDiffAt_retraction,
    ``Brouwer.exists_fixedPoint_of_contDiffAt,
    ``Kakutani.exists_fixedPoint,
@@ -61,6 +70,7 @@ meta def mainResults : List Name :=
    ``Schauder.exists_fixedPoint,
    ``Schauder.exists_fixedPoint_continuousMap,
    ``Schauder.exists_fixedPoint_of_isCompact_closure_image,
+   ``Schauder.Projection.exists_fixedPoint,
    ``FixedPointChallenge.brouwer,
    ``FixedPointChallenge.brouwer_closedBall,
    ``FixedPointChallenge.no_retraction,
@@ -111,6 +121,69 @@ end Audit
 #print axioms Schauder.exists_fixedPoint_of_isCompact_closure_image
 
 #audit
+
+/-! ## Independence of the proofs -/
+
+/-- Walks through the declarations that `root` uses, directly or through others. Returns whether
+it reaches `target`, and the declarations of the library it meets without a proof: those would be
+seen as axioms, if a module of the library lacked its `import all` line, and hide what they use. -/
+meta def reaches (env : Environment) (target root : Name) : Bool × Array Name := Id.run do
+  let mut seen : NameSet := {}
+  let mut stack : Array Name := #[root]
+  let mut found := false
+  let mut hidden : Array Name := #[]
+  while !stack.isEmpty do
+    let n := stack.back!
+    stack := stack.pop
+    if seen.contains n then continue
+    seen := seen.insert n
+    if n == target then found := true
+    if let some ci := env.find? n then
+      if ci matches .axiomInfo _ then
+        if let some idx := env.getModuleIdxFor? n then
+          if Audit.isLibraryModule env.header.moduleNames[idx.toNat]! then hidden := hidden.push n
+      for m in ci.getUsedConstantsAsSet do
+        unless seen.contains m do stack := stack.push m
+  return (found, hidden)
+
+/-- Resolves the two names and walks from the first, failing on library declarations without a
+proof. -/
+meta def reachesCmd (a b : Ident) : CommandElabM (Name × Name × Bool) := do
+  let na ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo a
+  let nb ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo b
+  let (found, hidden) := reaches (← getEnv) nb na
+  unless hidden.isEmpty do
+    throwError m!"declarations of the library without a proof (missing `import all`?): {hidden}"
+  return (na, nb, found)
+
+/-- `#independent a of b` checks that the declaration `a` does not use `b`. -/
+elab "#independent " a:ident " of " b:ident : command => do
+  let (na, nb, found) ← reachesCmd a b
+  if found then throwError m!"{na} uses {nb}"
+  logInfo m!"{na} does not use {nb}"
+
+/-- `#uses a of b` checks that the declaration `a` uses `b`: a control for `#independent`. -/
+elab "#uses " a:ident " of " b:ident : command => do
+  let (na, nb, found) ← reachesCmd a b
+  unless found do throwError m!"{na} does not use {nb}"
+  logInfo m!"{na} uses {nb}"
+
+-- Controls: the analytic proof, and the second proofs of Kakutani's and Schauder's theorems, use
+-- the analytic proof of Brouwer's theorem; the KKM proof uses Sperner's lemma.
+#uses Brouwer.exists_fixedPoint of Brouwer.no_contDiffAt_retraction
+#uses Kakutani.Selection.exists_fixedPoint of Brouwer.no_contDiffAt_retraction
+#uses Schauder.Projection.exists_fixedPoint of Brouwer.no_contDiffAt_retraction
+#uses Brouwer.KKM.exists_fixedPoint of Sperner.count_eq_one
+
+-- The proof through the KKM lemma uses nothing of the analytic proof.
+#independent Brouwer.KKM.exists_fixedPoint of Brouwer.no_contDiffAt_retraction
+#independent Brouwer.KKM.exists_fixedPoint of Brouwer.exists_fixedPoint_closedBall
+-- Kakutani's and Schauder's proofs use Brouwer's theorem in the proof of Knaster, Kuratowski and
+-- Mazurkiewicz, which both papers cite.
+#independent Kakutani.exists_fixedPoint of Brouwer.no_contDiffAt_retraction
+#independent Schauder.exists_fixedPoint of Brouwer.no_contDiffAt_retraction
+#independent Schauder.exists_fixedPoint_of_isCompact_closure_image
+  of Brouwer.no_contDiffAt_retraction
 
 /-! ## The statements in the forms used downstream -/
 
