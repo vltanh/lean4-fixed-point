@@ -334,14 +334,14 @@ fidelity:
     does not state that the values are nonempty, but his proof needs it and the theorem fails
     without it; the formalization requires it, as his Theorem 2 does. Theorem 1 is proved by
     Kakutani's argument, including his approximation by maps that are linear on the simplices of
-    the n-th barycentric subdivision (built in FixedPoint/Simplex/Subdivision.lean, with the
+    the n-th barycentric subdivision (built in FixedPoint/Common/Subdivision.lean, with the
     continuity of the piecewise-linear maps and the decay of the mesh). The subdivisions are built
     on the standard simplex and carried to any other simplex, or convex hull of finitely many
     points, by the linear map u -> sum u_k v_k, where Kakutani subdivides the simplex itself; one
     subsequence serves where Kakutani takes them one after the other. For the Corollary, Kakutani
     encloses the set in a simplex, the formalization in the convex hull of a finite set (the image
     of a simplex), and uses the nearest-point retraction, which Kakutani leaves unspecified. A
-    second proof (Kakutani.PartitionOfUnity.exists_fixedPoint) replaces the subdivisions by the
+    second proof (Kakutani.Selection.exists_fixedPoint) replaces the subdivisions by the
     partition of unity of Schauder's projection and Caratheodory's theorem.
 
 

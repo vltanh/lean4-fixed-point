@@ -20,7 +20,7 @@ The declarations are in the namespace `Brouwer`. `E` is a finite-dimensional rea
 space (`[NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]`), for instance
 `EuclideanSpace ℝ (Fin n)`; `V` is a finite-dimensional real normed space.
 
-[`Brouwer.exists_fixedPoint`](../FixedPoint/Brouwer/Convex.lean#L51), Brouwer's theorem for
+[`Brouwer.exists_fixedPoint`](../FixedPoint/Brouwer/Convex.lean#L52), Brouwer's theorem for
 compact convex sets:
 
 ```lean
@@ -30,7 +30,7 @@ theorem exists_fixedPoint {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     ∃ x ∈ s, f x = x
 ```
 
-[`Brouwer.exists_fixedPoint_continuousMap`](../FixedPoint/Brouwer/Convex.lean#L70), the same for
+[`Brouwer.exists_fixedPoint_continuousMap`](../FixedPoint/Brouwer/Convex.lean#L71), the same for
 `C(s, s)`:
 
 ```lean
@@ -72,10 +72,10 @@ The declarations are in the namespace `Kakutani`. A set-valued map is a function
 `{p : V × V | p.1 ∈ s ∧ p.2 ∈ φ p.1}`, is closed in `V × V` exactly when it is closed in `s × s`
 (`s` being closed), and exactly when `φ` is upper semicontinuous in Kakutani's sense: `xₙ → x` in
 `s`, `yₙ ∈ φ xₙ` and `yₙ → y` imply `y ∈ φ x`
-([`Kakutani.isClosed_graph_iff_seq`](../FixedPoint/Kakutani/Convex.lean#L108)). The values `φ x`
+([`Kakutani.isClosed_graph_iff_seq`](../FixedPoint/Kakutani/Convex.lean#L155)). The values `φ x`
 are then closed, and need not be required closed.
 
-[`Kakutani.exists_fixedPoint`](../FixedPoint/Kakutani/Convex.lean#L85), Kakutani's theorem for
+[`Kakutani.exists_fixedPoint`](../FixedPoint/Kakutani/Convex.lean#L132), Kakutani's theorem for
 compact convex sets of a finite-dimensional real normed space:
 
 ```lean
@@ -88,16 +88,16 @@ theorem exists_fixedPoint {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 On the way:
 
-- [`Kakutani.exists_fixedPoint_simplex`](../FixedPoint/Kakutani/Simplex.lean#L141), Kakutani's
+- [`Kakutani.exists_fixedPoint_simplex`](../FixedPoint/Kakutani/Simplex.lean#L147), Kakutani's
   Theorem 1: the same for a closed simplex `S.closedInterior`, `S : Affine.Simplex ℝ V r`, in a
   real normed space of any dimension;
-- [`Kakutani.exists_fixedPoint_stdSimplex`](../FixedPoint/Kakutani/Simplex.lean#L64): the same for
+- [`Kakutani.exists_fixedPoint_stdSimplex`](../FixedPoint/Kakutani/Simplex.lean#L70): the same for
   the standard simplex of `Fin (r + 1) → ℝ`, where Kakutani's proof is carried out;
-- [`Kakutani.exists_fixedPoint_convexHull`](../FixedPoint/Kakutani/Simplex.lean#L153): the same
+- [`Kakutani.exists_fixedPoint_convexHull`](../FixedPoint/Kakutani/Simplex.lean#L159): the same
   for the convex hull of a nonempty finite set;
-- [`Kakutani.PartitionOfUnity.exists_fixedPoint`](../FixedPoint/Kakutani/PartitionOfUnity.lean#L121):
+- [`Kakutani.Selection.exists_fixedPoint`](../FixedPoint/Kakutani/Selection.lean#L118):
   `Kakutani.exists_fixedPoint` again, by a second proof;
-- [`Kakutani.exists_fixedPoint_of_innerProductSpace`](../FixedPoint/Kakutani/Convex.lean#L53),
+- [`Kakutani.exists_fixedPoint_of_innerProductSpace`](../FixedPoint/Kakutani/Convex.lean#L104),
   Kakutani's Corollary: the same for a finite-dimensional real inner product space, that is, a
   Euclidean space.
 
@@ -105,7 +105,7 @@ On the way:
 
 The declarations are in the namespace `Schauder`. `E` is a real normed space of any dimension.
 
-[`Schauder.exists_fixedPoint`](../FixedPoint/Schauder/Convex.lean#L81), Schauder's theorem for
+[`Schauder.exists_fixedPoint`](../FixedPoint/Schauder/Convex.lean#L79), Schauder's theorem for
 compact convex sets (Satz I); the space need not be complete. Schauder states Satz I for complete
 metric linear spaces, which need not be normed ([departures](#departures-from-the-sources)):
 
@@ -128,7 +128,7 @@ theorem exists_fixedPoint_of_isCompact_closure_image {E : Type*} [NormedAddCommG
 
 On the way:
 
-- [`Schauder.exists_fixedPoint_continuousMap`](../FixedPoint/Schauder/Convex.lean#L96): the first
+- [`Schauder.exists_fixedPoint_continuousMap`](../FixedPoint/Schauder/Convex.lean#L94): the first
   form for `f : C(s, s)`;
 - [`Schauder.isCompact_closedConvexHull`](../FixedPoint/Schauder/CompactImage.lean#L42), Mazur's
   theorem: in a real Banach space, the closed convex hull of a totally bounded set is compact;
@@ -192,7 +192,7 @@ degree theory or simplicial approximation.
    isomorphism `V ≃L[ℝ] EuclideanSpace ℝ (Fin n)` reduces to an inner product space. There a
    nonempty compact convex `s` lies in a closed ball `B̄` and is a retract of the space through
    the `1`-Lipschitz nearest-point map `π`
-   ([`NearestPoint.lean`](../FixedPoint/Brouwer/NearestPoint.lean)). A fixed point `x` of
+   ([`NearestPoint.lean`](../FixedPoint/Common/NearestPoint.lean)). A fixed point `x` of
    `f ∘ π` on `B̄` lies in `s`, so `π x = x` and `f x = x`.
 
 The proof follows the standard argument that Milnor's and Rogers's papers are known for; it was
@@ -201,7 +201,7 @@ formalized here.
 
 ### Kakutani's theorem
 
-Kakutani's proof ([`Subdivision.lean`](../FixedPoint/Simplex/Subdivision.lean),
+Kakutani's proof ([`Subdivision.lean`](../FixedPoint/Common/Subdivision.lean),
 [`Limit.lean`](../FixedPoint/Kakutani/Limit.lean),
 [`Simplex.lean`](../FixedPoint/Kakutani/Simplex.lean),
 [`Convex.lean`](../FixedPoint/Kakutani/Convex.lean)).
@@ -230,20 +230,22 @@ Kakutani's proof ([`Subdivision.lean`](../FixedPoint/Simplex/Subdivision.lean),
    `Kakutani.exists_fixedPoint_convexHull`). The convex hull of points `v 0, …, v r` is the image
    of `Δ` under `A u = ∑ u k • v k`; Theorem 1 on `Δ` for `u ↦ {u' ∈ Δ | A u' ∈ φ (A u)}` gives it.
 5. **Compact convex sets** (Corollary, `Kakutani.exists_fixedPoint_of_innerProductSpace`). In an
-   inner product space, `s` lies in the convex hull `K` of a finite set, and is a retract of the
-   space through the nearest-point map `π`. The map `x ↦ φ (π x)` satisfies the hypotheses on
+   inner product space, `s` lies in a simplex `K`, with vertices `v₀ = -R ∑ bᵢ` and
+   `v₀ + 2 d R bᵢ` for an orthonormal basis `b`, `d = dim`, `s ⊆ closedBall 0 R`
+   (`Kakutani.exists_subset_convexHull_simplex`), and is a retract of the space through the
+   nearest-point map `π`. The map `x ↦ φ (π x)` satisfies the hypotheses on
    `K`, so `x ∈ φ (π x)` for some `x`; then `x ∈ s`, `π x = x` and `x ∈ φ x`. A linear isomorphism
    with `EuclideanSpace ℝ (Fin n)` gives finite-dimensional normed spaces
    (`Kakutani.exists_fixedPoint`).
 
-A second proof, `Kakutani.PartitionOfUnity.exists_fixedPoint`
-([`PartitionOfUnity.lean`](../FixedPoint/Kakutani/PartitionOfUnity.lean)), replaces step 1 and 2
+A second proof, `Kakutani.Selection.exists_fixedPoint`
+([`Selection.lean`](../FixedPoint/Kakutani/Selection.lean)), replaces steps 1 and 2
 by the average of the values `y c ∈ φ c` at the points `c` of a finite `δ`-net, weighted by the
 partition of unity of Schauder's projection, and Carathéodory's theorem; it needs no simplex.
 
 ### Schauder's theorem
 
-([`Projection.lean`](../FixedPoint/Schauder/Projection.lean),
+([`SchauderProjection.lean`](../FixedPoint/Common/SchauderProjection.lean),
 [`Polytope.lean`](../FixedPoint/Brouwer/Polytope.lean),
 [`Convex.lean`](../FixedPoint/Schauder/Convex.lean),
 [`CompactImage.lean`](../FixedPoint/Schauder/CompactImage.lean))
@@ -251,7 +253,7 @@ partition of unity of Schauder's projection, and Carathéodory's theorem; it nee
 1. **Brouwer for polytopes** (`Brouwer.exists_fixedPoint_convexHull_of_finite`). The convex hull
    `K` of a nonempty finite set `t` lies in the span of `t`, a finite-dimensional space, where
    Brouwer's theorem applies.
-2. **Schauder's projection** (`Schauder.blend`). For a finite set `t` and `ε > 0`, the map
+2. **Schauder's projection** (`SchauderProjection.blend`). For a finite set `t` and `ε > 0`, the map
    `P x = (∑ c ∈ t, wᶜ(x))⁻¹ • ∑ c ∈ t, wᶜ(x) • c`, `wᶜ(x) = max 0 (ε - ‖x - c‖)`, is continuous
    on the union of the balls of radius `ε` about the points of `t`, maps it into the convex hull
    of `t`, and moves each of its points by less than `ε`.
@@ -274,8 +276,9 @@ Statements:
   explicitly. Closed values follow from the closed graph and are not required. Theorem 1 is proved
   for convex hulls of nonempty finite sets, closed simplices being a special case also stated.
 - **Kakutani, Corollary.** Kakutani's "bounded closed convex set in a Euclidean space" is a
-  compact convex set of a finite-dimensional real inner product space; `Kakutani.exists_fixedPoint`
-  extends it to finite-dimensional normed spaces.
+  compact convex set of a finite-dimensional real inner product space, required nonempty, which
+  Kakutani leaves implicit; `Kakutani.exists_fixedPoint` extends it to finite-dimensional normed
+  spaces.
 - **Schauder, Satz I.** Schauder states it for complete metric linear spaces (Banach's axioms,
   with a translation-invariant metric), not necessarily locally convex. His proof uses that a
   convex combination of points close to each other stays close to them (his Hilfssatz I), which
@@ -289,8 +292,8 @@ Proofs:
 | Theorem | Source's proof | Formal proof | Reason |
 | --- | --- | --- | --- |
 | Brouwer | topological (Brouwer 1911/1912) | analytic, Milnor–Rogers | the analytic route uses Mathlib's analysis; Brouwer's own proof is not followed |
-| Kakutani, Theorem 1 | the `n`-th barycentric subdivision of the simplex `S`, the map linear on its simplices with a point of `φ v` at each vertex `v`, Brouwer, subsequences, the closed graph, convexity | the same, on the standard simplex `Δ`, carried to `S` by the linear map `u ↦ ∑ u k • v k` | a change of coordinates: the subdivisions of `S` are the images of those of `Δ`. One subsequence serves where Kakutani takes them one after the other |
-| Kakutani, Corollary | a simplex containing `S` and a retraction onto `S` | the convex hull of a finite set containing `S` (the image of a simplex) and the nearest-point retraction | Mathlib provides the enclosing hull; Kakutani does not specify the retraction |
+| Kakutani, Theorem 1 | the `n`-th barycentric subdivision of the simplex `S`, the map linear on its simplices with a point of `φ v` at each vertex `v`, Brouwer, subsequences, the closed graph, convexity | the same, on the standard simplex `Δ`, carried to `S` by the linear map `u ↦ ∑ u k • v k` | none in the argument: the subdivisions of `S` are the images of those of `Δ`; one choice of points of `φ` serves for every `n`, and one subsequence where Kakutani takes them one after the other |
+| Kakutani, Corollary | a simplex containing `S` and a retraction onto `S` | the same, with the nearest-point retraction | Kakutani does not specify the retraction |
 | Schauder, Satz I | the convex hull of an `ε`-net triangulated finely; `f` approximated by a simplicial map sending each vertex `d` to a point of the net within `ε` of `f d`; Brouwer; a point moved by less than `3ε`; compactness | Schauder's projection onto the convex hull of the net composed with `f`; Brouwer in the span of the net; a point moved by less than `ε`; compactness | Mathlib has no triangulations of polytopes or simplicial approximation. The projection, with weights `max 0 (ε - ‖x - c‖)`, is the "Schauder projection" of later expositions and is not in the paper |
 | Schauder, Satz II | Mazur's theorem (Schauder's Hilfssatz II), then Satz I on the closed convex hull of `f(H)` | the same | none |
 
@@ -396,21 +399,22 @@ native Coq/Rocq.
 | Path | Content |
 | --- | --- |
 | [`FixedPoint.lean`](../FixedPoint.lean) | imports the whole library |
+| [`FixedPoint/Common/ContinuousMap.lean`](../FixedPoint/Common/ContinuousMap.lean) | the `C(s, s)` form of a fixed-point theorem for maps continuous on `s` |
+| [`FixedPoint/Common/NearestPoint.lean`](../FixedPoint/Common/NearestPoint.lean) | the nearest-point retraction onto a closed convex set |
+| [`FixedPoint/Common/SchauderProjection.lean`](../FixedPoint/Common/SchauderProjection.lean) | Schauder's projection and its partition of unity |
+| [`FixedPoint/Common/Subdivision.lean`](../FixedPoint/Common/Subdivision.lean) | iterated barycentric subdivisions of the standard simplex: piecewise-linear interpolation, its continuity, the mesh |
 | [`FixedPoint/Brouwer/DetPolynomial.lean`](../FixedPoint/Brouwer/DetPolynomial.lean) | `det (1 + t A)` and its integrals are polynomials in `t`; `det (1 + A) > 0` for `‖A‖ < 1` |
 | [`FixedPoint/Brouwer/SmoothRetraction.lean`](../FixedPoint/Brouwer/SmoothRetraction.lean) | no `C¹` retraction of the closed unit ball onto the sphere |
 | [`FixedPoint/Brouwer/SmoothFixedPoint.lean`](../FixedPoint/Brouwer/SmoothFixedPoint.lean) | Brouwer's theorem for `C¹` maps of the closed unit ball |
 | [`FixedPoint/Brouwer/Ball.lean`](../FixedPoint/Brouwer/Ball.lean) | Brouwer's theorem for closed balls, the no-retraction theorem |
-| [`FixedPoint/Brouwer/NearestPoint.lean`](../FixedPoint/Brouwer/NearestPoint.lean) | the nearest-point retraction onto a closed convex set |
 | [`FixedPoint/Brouwer/Convex.lean`](../FixedPoint/Brouwer/Convex.lean) | Brouwer's theorem for compact convex sets |
 | [`FixedPoint/Brouwer/Polytope.lean`](../FixedPoint/Brouwer/Polytope.lean) | Brouwer's theorem for convex hulls of finite sets in a normed space of any dimension |
 | [`FixedPoint/Kakutani/Limit.lean`](../FixedPoint/Kakutani/Limit.lean) | the limit in Kakutani's proof |
 | [`FixedPoint/Kakutani/Simplex.lean`](../FixedPoint/Kakutani/Simplex.lean) | Kakutani's Theorem 1, by his proof: the standard simplex, simplices, convex hulls of finite sets |
-| [`FixedPoint/Kakutani/PartitionOfUnity.lean`](../FixedPoint/Kakutani/PartitionOfUnity.lean) | a second proof of Kakutani's theorem, through a partition of unity |
+| [`FixedPoint/Kakutani/Selection.lean`](../FixedPoint/Kakutani/Selection.lean) | a second proof of Kakutani's theorem, through a partition of unity |
 | [`FixedPoint/Kakutani/Convex.lean`](../FixedPoint/Kakutani/Convex.lean) | Kakutani's theorem for compact convex sets; closed graph and upper semicontinuity |
-| [`FixedPoint/Schauder/Projection.lean`](../FixedPoint/Schauder/Projection.lean) | Schauder's projection and its partition of unity |
 | [`FixedPoint/Schauder/Convex.lean`](../FixedPoint/Schauder/Convex.lean) | Schauder's theorem for compact convex sets |
 | [`FixedPoint/Schauder/CompactImage.lean`](../FixedPoint/Schauder/CompactImage.lean) | Mazur's theorem; Schauder's theorem for closed convex sets and maps with relatively compact image |
-| [`FixedPoint/Simplex/Subdivision.lean`](../FixedPoint/Simplex/Subdivision.lean) | iterated barycentric subdivisions of the standard simplex: piecewise-linear interpolation, its continuity, the mesh |
 | [`FixedPointChallenge.lean`](../FixedPointChallenge.lean), [`FixedPointSolution.lean`](../FixedPointSolution.lean), [`comparator.json`](../comparator.json), [`formalization.yaml`](../formalization.yaml) | Palomar: the statements of record, their proofs, the Comparator configuration, the metadata |
 | [`scripts/Audit.lean`](../scripts/Audit.lean) | the axiom audit |
 | [`.github/workflows/lean_action_ci.yml`](../.github/workflows/lean_action_ci.yml) | CI: build, audit, import list of the audit, line lengths |

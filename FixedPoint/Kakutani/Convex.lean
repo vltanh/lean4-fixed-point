@@ -6,8 +6,8 @@ Authors: The-Anh Vu-Le
 module
 
 public import FixedPoint.Kakutani.Simplex
-public import FixedPoint.Brouwer.NearestPoint
-public import Mathlib.Analysis.Normed.Affine.Convex
+public import FixedPoint.Common.NearestPoint
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # Kakutani's fixed-point theorem for compact convex sets
@@ -25,26 +25,77 @@ with closed graph `{(x, y) | x ∈ s, y ∈ φ x}`. Then `x ∈ φ x` for some `
 
 ## Proof
 
-Kakutani's reduction to his Theorem 1. In an inner product space, `s` lies in the convex hull `K`
-of a finite set (`Convex.exists_subset_interior_convexHull_finset_of_isCompact`), and is a retract
-of the space through the nearest-point map `π` (`Brouwer.exists_lipschitzWith_retraction`). The
-map `x ↦ φ (π x)` sends `K` to nonempty convex subsets of `s ⊆ K`, with closed graph, so
-`x ∈ φ (π x)` for some `x ∈ K` (`Kakutani.exists_fixedPoint_convexHull`). Then `x ∈ s`, so
-`π x = x` and `x ∈ φ x`. A linear isomorphism `V ≃L[ℝ] EuclideanSpace ℝ (Fin n)` reduces normed
-spaces to inner product spaces.
+Kakutani's reduction to his Theorem 1. In an inner product space, `s` lies in a simplex `K`
+(`Kakutani.exists_subset_convexHull_simplex`), and is a retract of the space through the
+nearest-point map `π` (`NearestPoint.exists_lipschitzWith_retraction`), Kakutani's unspecified
+retraction. The map `x ↦ φ (π x)` sends `K` to nonempty convex subsets of `s ⊆ K`, with closed
+graph, so `x ∈ φ (π x)` for some `x ∈ K` (`Kakutani.exists_fixedPoint_convexHull_range`). Then
+`x ∈ s`, so `π x = x` and `x ∈ φ x`. A linear isomorphism `V ≃L[ℝ] EuclideanSpace ℝ (Fin n)`
+reduces normed spaces to inner product spaces, as for Brouwer's theorem.
 
-Kakutani encloses `s` in a simplex; the formalization encloses it in the convex hull of a finite
-set, the image of a simplex under a linear map, for which Theorem 1 is proved the same way
-(`Kakutani.exists_fixedPoint_convexHull`), and uses the nearest-point retraction, which Kakutani
-leaves unspecified. A second proof, which needs no simplex, is
-`Kakutani.PartitionOfUnity.exists_fixedPoint`.
+Kakutani's `s` is a bounded closed convex set; it must also be nonempty, which he leaves
+implicit. A second proof, which needs no simplex, is `Kakutani.Selection.exists_fixedPoint`.
 -/
 
 @[expose] public section
 
 open Set Filter Topology Module
+open scoped InnerProductSpace
 
 namespace Kakutani
+
+/-- A bounded set of a finite-dimensional real inner product space lies in a simplex. With an
+orthonormal basis `b` of `F`, `d = dim F` and `s ⊆ closedBall 0 R`, the simplex has the vertices
+`v₀ = -R ∑ i, b i` and `v₀ + 2 d R b i`: a point `x` of the ball is
+`(1 - ∑ μ i) v₀ + ∑ μ i (v₀ + 2 d R b i)` with `μ i = (⟪b i, x⟫ + R) / (2 d R)`. -/
+theorem exists_subset_convexHull_simplex {F : Type*} [NormedAddCommGroup F]
+    [InnerProductSpace ℝ F] [FiniteDimensional ℝ F] {s : Set F} (hs : Bornology.IsBounded s) :
+    ∃ v : Fin (finrank ℝ F + 1) → F, s ⊆ convexHull ℝ (range v) := by
+  obtain ⟨R, hR, hsR⟩ := hs.subset_closedBall_lt 0 0
+  set d := finrank ℝ F
+  let b := stdOrthonormalBasis ℝ F
+  let v₀ : F := -(R • ∑ i, b i)
+  let c : ℝ := 2 * d * R
+  let v : Fin (d + 1) → F := Fin.cons v₀ fun i ↦ v₀ + c • b i
+  refine ⟨v, fun x hx ↦ ?_⟩
+  have hxR : ‖x‖ ≤ R := by simpa using hsR hx
+  have hinner : ∀ i, |⟪b i, x⟫_ℝ| ≤ R := fun i ↦
+    (abs_real_inner_le_norm _ _).trans (by rw [b.orthonormal.1 i, one_mul]; exact hxR)
+  have hd : ∀ i : Fin d, (1 : ℝ) ≤ d := fun i ↦ by
+    exact_mod_cast Nat.one_le_iff_ne_zero.2 (Fin.pos i).ne'
+  have hc : ∀ i : Fin d, 0 < c := fun i ↦ mul_pos (mul_pos two_pos (by linarith [hd i])) hR
+  let μ : Fin d → ℝ := fun i ↦ (⟪b i, x⟫_ℝ + R) / c
+  have hμ0 : ∀ i, 0 ≤ μ i := fun i ↦
+    div_nonneg (by linarith [neg_abs_le ⟪b i, x⟫_ℝ, hinner i]) (hc i).le
+  have hμ1 : ∀ i, μ i ≤ 1 / d := fun i ↦ by
+    rw [div_le_div_iff₀ (hc i) (by linarith [hd i])]
+    nlinarith [le_abs_self ⟪b i, x⟫_ℝ, hinner i, hd i]
+  have hsum : ∑ i, μ i ≤ 1 := by
+    refine (Finset.sum_le_sum fun i _ ↦ hμ1 i).trans ?_
+    rw [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul]
+    rcases Nat.eq_zero_or_pos d with h | h
+    · simp [h]
+    · rw [mul_one_div_cancel (by exact_mod_cast h.ne')]
+  let w : Fin (d + 1) → ℝ := Fin.cons (1 - ∑ i, μ i) μ
+  have hterm : ∀ i, μ i • (v₀ + c • b i) = μ i • v₀ + (⟪b i, x⟫_ℝ + R) • b i := fun i ↦ by
+    rw [smul_add, smul_smul, div_mul_cancel₀ _ (hc i).ne']
+  have heq : ∑ j, w j • v j = x := by
+    rw [Fin.sum_univ_succ]
+    simp only [w, v, Fin.cons_zero, Fin.cons_succ, hterm, Finset.sum_add_distrib,
+      ← Finset.sum_smul, add_smul, ← Finset.smul_sum]
+    have hrepr : ∑ i, ⟪b i, x⟫_ℝ • b i = x := b.sum_repr' x
+    rw [hrepr]
+    simp only [v₀]
+    module
+  rw [← heq]
+  refine (convex_convexHull ℝ _).sum_mem (fun j _ ↦ ?_) ?_ fun j _ ↦ subset_convexHull ℝ _ ⟨j, rfl⟩
+  · refine Fin.cases ?_ (fun i ↦ ?_) j
+    · simp only [w, Fin.cons_zero]
+      linarith
+    · simp only [w, Fin.cons_succ]
+      exact hμ0 i
+  · rw [Fin.sum_univ_succ]
+    simp [w]
 
 /-- **Kakutani's fixed-point theorem** in a finite-dimensional real inner product space (Kakutani
 1941, Corollary): if `φ` sends each point of a nonempty compact convex set `s` to a nonempty
@@ -55,25 +106,21 @@ theorem exists_fixedPoint_of_innerProductSpace {F : Type*} [NormedAddCommGroup F
     (hcomp : IsCompact s) (hne : s.Nonempty) {φ : F → Set F} (hmaps : ∀ x ∈ s, φ x ⊆ s)
     (hφne : ∀ x ∈ s, (φ x).Nonempty) (hφconv : ∀ x ∈ s, Convex ℝ (φ x))
     (hgraph : IsClosed {p : F × F | p.1 ∈ s ∧ p.2 ∈ φ p.1}) : ∃ x ∈ s, x ∈ φ x := by
-  obtain ⟨π, hπ, hπs, hπfix⟩ := Brouwer.exists_lipschitzWith_retraction hne hcomp.isClosed hconv
-  -- a convex hull `K` of a finite set that contains `s`
-  obtain ⟨u, hsu, -⟩ := hconv.exists_subset_interior_convexHull_finset_of_isCompact hcomp
-    (univ_mem : univ ∈ 𝓝ˢ s)
-  have hsK : s ⊆ convexHull ℝ (u : Set F) := hsu.trans interior_subset
-  have hune : (u : Set F).Nonempty := by
-    obtain ⟨x, hx⟩ := hne
-    exact convexHull_nonempty_iff.1 ⟨x, hsK hx⟩
+  obtain ⟨π, hπ, hπs, hπfix⟩ :=
+    NearestPoint.exists_lipschitzWith_retraction hne hcomp.isClosed hconv
+  -- a simplex `K` that contains `s`
+  obtain ⟨v, hsK⟩ := exists_subset_convexHull_simplex hcomp.isBounded
   -- the graph of `x ↦ φ (π x)` over `K` is closed
-  have hgraph' : IsClosed {p : F × F | p.1 ∈ convexHull ℝ (u : Set F) ∧ p.2 ∈ φ (π p.1)} := by
-    have : {p : F × F | p.1 ∈ convexHull ℝ (u : Set F) ∧ p.2 ∈ φ (π p.1)} =
-        Prod.fst ⁻¹' convexHull ℝ (u : Set F) ∩
+  have hgraph' : IsClosed {p : F × F | p.1 ∈ convexHull ℝ (range v) ∧ p.2 ∈ φ (π p.1)} := by
+    have : {p : F × F | p.1 ∈ convexHull ℝ (range v) ∧ p.2 ∈ φ (π p.1)} =
+        Prod.fst ⁻¹' convexHull ℝ (range v) ∩
           Prod.map π id ⁻¹' {p : F × F | p.1 ∈ s ∧ p.2 ∈ φ p.1} := by
       ext p
       simp [hπs]
     rw [this]
-    exact ((u.finite_toSet.isCompact_convexHull ℝ).isClosed.preimage continuous_fst).inter
+    exact (((finite_range v).isCompact_convexHull ℝ).isClosed.preimage continuous_fst).inter
       (hgraph.preimage (hπ.continuous.prodMap continuous_id))
-  obtain ⟨x, -, hx⟩ := exists_fixedPoint_convexHull (φ := fun x ↦ φ (π x)) u.finite_toSet hune
+  obtain ⟨x, -, hx⟩ := exists_fixedPoint_convexHull_range v (φ := fun x ↦ φ (π x))
     (fun x _ ↦ (hmaps _ (hπs x)).trans hsK) (fun x _ ↦ hφne _ (hπs x))
     (fun x _ ↦ hφconv _ (hπs x)) hgraph'
   have hxs : x ∈ s := hmaps _ (hπs x) hx

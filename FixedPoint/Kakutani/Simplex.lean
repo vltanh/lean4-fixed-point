@@ -7,7 +7,7 @@ module
 
 public import FixedPoint.Brouwer.Convex
 public import FixedPoint.Kakutani.Limit
-public import FixedPoint.Simplex.Subdivision
+public import FixedPoint.Common.Subdivision
 public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
@@ -47,9 +47,15 @@ Kakutani's proof, on the standard simplex `Δ`.
 
 A simplex `S` with vertices `v 0, …, v r` in `V` is the image of `Δ` under the linear map
 `A u = ∑ u k • v k`, which maps the subdivisions of `Δ` to those of `S`; the theorem for `S`
-follows from the theorem on `Δ` for `u ↦ {u' ∈ Δ | A u' ∈ φ (A u)}`. This change of coordinates is
-the only difference from Kakutani's text, which subdivides `S` itself. It does not use that the
-vertices are affinely independent, so the theorem holds for convex hulls of finitely many points.
+follows from the theorem on `Δ` for `u ↦ {u' ∈ Δ | A u' ∈ φ (A u)}`. The argument does not use
+that the vertices are affinely independent, so the theorem holds for convex hulls of finitely many
+points too.
+
+Differences from Kakutani's text, none of them in the argument: he subdivides `S` itself, where
+the proof is carried out on `Δ` and transported by `A`; he chooses the points of `φ` at the
+vertices of each subdivision separately, where one choice `y v ∈ φ v` serves for all `n`; he takes
+successive subsequences, where one subsequence serves; and Brouwer's theorem is applied in its form
+for compact convex sets (`Brouwer.exists_fixedPoint`).
 -/
 
 @[expose] public section

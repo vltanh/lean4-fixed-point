@@ -7,25 +7,26 @@ module
 
 public import FixedPoint.Brouwer.Convex
 public import FixedPoint.Kakutani.Limit
-public import FixedPoint.Schauder.Projection
+public import FixedPoint.Common.SchauderProjection
 public import Mathlib.Analysis.Convex.Caratheodory
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
 
 /-!
-# Kakutani's theorem through a partition of unity
+# Kakutani's theorem through approximate selections
 
 A second proof of Kakutani's fixed-point theorem for compact convex sets of finite-dimensional
-real normed spaces, `Kakutani.PartitionOfUnity.exists_fixedPoint`, with the same statement as
+real normed spaces, `Kakutani.Selection.exists_fixedPoint`, with the same statement as
 `Kakutani.exists_fixedPoint`. Kakutani's proof (`FixedPoint/Kakutani/Simplex.lean`) approximates
 `φ` by piecewise-linear maps on barycentric subdivisions of a simplex; this one approximates it by
-averages over a partition of unity, which need no simplex.
+continuous maps whose values are averages of points of `φ` over a partition of unity (approximate
+selections), which need no simplex.
 
-1. **Approximation** (`Kakutani.PartitionOfUnity.exists_approx`). For `δ > 0`, cover `s` by
+1. **Approximation** (`Kakutani.Selection.exists_approx`). For `δ > 0`, cover `s` by
    finitely many open balls of radius `δ` centered at points `c ∈ s`, pick `y c ∈ φ c`, and let
    `F x` be the average of the `y c` weighted by the partition of unity of Schauder's projection
-   (`Schauder.blend`). Then `F` maps `s` continuously into `s`, so it has a fixed point `x` by
-   Brouwer's theorem. By Carathéodory's theorem, `x` is a convex combination of `dim V + 1` points
-   `y j ∈ φ (a j)` with `a j ∈ s` within `δ` of `x`.
+   (`SchauderProjection.blend`). Then `F` maps `s` continuously into `s`, so it has a fixed point
+   `x` by Brouwer's theorem. By Carathéodory's theorem, `x` is a convex combination of
+   `dim V + 1` points `y j ∈ φ (a j)` with `a j ∈ s` within `δ` of `x`.
 2. **Limit** (`Kakutani.exists_mem_self_of_approx`), as in Kakutani's proof, with
    `δ = 1 / (n + 1)`.
 -/
@@ -34,7 +35,7 @@ averages over a partition of unity, which need no simplex.
 
 open Set Filter Topology Module
 
-namespace Kakutani.PartitionOfUnity
+namespace Kakutani.Selection
 
 /-- **Carathéodory's theorem** with exactly `finrank + 1` points: a point of the convex hull of `T`
 in a finite-dimensional real vector space is a convex combination of `finrank + 1` points of `T`,
@@ -89,32 +90,28 @@ theorem exists_approx {s : Set V} (hconv : Convex ℝ s) (hcomp : IsCompact s) (
       (∀ j, 0 ≤ w j) ∧ ∑ j, w j = 1 ∧
         (∀ j, a j ∈ s ∧ y j ∈ φ (a j) ∧ dist (a j) x < δ) ∧ ∑ j, w j • y j = x := by
   classical
-  obtain ⟨t, hts, htfin, hcover⟩ := hcomp.finite_cover_balls hδ
-  have hcov : ∀ x ∈ s, ∃ c ∈ htfin.toFinset, dist x c < δ := fun x hx ↦ by
-    obtain ⟨c, hc, hxc⟩ := mem_iUnion₂.1 (hcover hx)
-    exact ⟨c, htfin.mem_toFinset.2 hc, hxc⟩
+  obtain ⟨t, hts, hcov⟩ := SchauderProjection.exists_finset_cover hcomp hδ
   choose! g hg using hφne
   -- the approximating map: the values `g c ∈ φ c` averaged with Schauder's partition of unity
-  let F := Schauder.blend htfin.toFinset δ g
-  have hT : ∀ x, g '' {c | c ∈ htfin.toFinset ∧ dist x c < δ} ⊆ s := fun x ↦ by
+  let F := SchauderProjection.blend t δ g
+  have hT : ∀ x, g '' {c | c ∈ t ∧ dist x c < δ} ⊆ s := fun x ↦ by
     rintro _ ⟨c, ⟨hc, -⟩, rfl⟩
-    have hcs : c ∈ s := hts (htfin.mem_toFinset.1 hc)
-    exact hmaps c hcs (hg c hcs)
+    exact hmaps c (hts hc) (hg c (hts hc))
   have hF : MapsTo F s s := fun x hx ↦
-    convexHull_min (hT x) hconv (Schauder.blend_mem_convexHull (hcov x hx) g)
+    convexHull_min (hT x) hconv (SchauderProjection.blend_mem_convexHull (hcov x hx) g)
   obtain ⟨x, hx, hFx⟩ := Brouwer.exists_fixedPoint hconv hcomp hne hF
-    ((Schauder.continuousOn_blend _ δ g).mono hcov)
-  have hxT : x ∈ convexHull ℝ (g '' {c | c ∈ htfin.toFinset ∧ dist x c < δ}) := by
-    have h := Schauder.blend_mem_convexHull (hcov x hx) g
-    rwa [show Schauder.blend htfin.toFinset δ g x = x from hFx] at h
+    ((SchauderProjection.continuousOn_blend _ δ g).mono hcov)
+  have hxT : x ∈ convexHull ℝ (g '' {c | c ∈ t ∧ dist x c < δ}) := by
+    have h := SchauderProjection.blend_mem_convexHull (hcov x hx) g
+    rwa [show SchauderProjection.blend t δ g x = x from hFx] at h
   obtain ⟨w, z, hw0, hw1, hz, hsum⟩ := exists_sum_fin_eq_of_mem_convexHull hxT
   choose a ha using hz
   refine ⟨x, hx, w, a, z, hw0, hw1, fun j ↦ ?_, hsum⟩
   obtain ⟨⟨hc, hdist⟩, hgz⟩ := ha j
-  have has : a j ∈ s := hts (htfin.mem_toFinset.1 hc)
+  have has : a j ∈ s := hts hc
   exact ⟨has, hgz ▸ hg _ has, by rw [dist_comm]; exact hdist⟩
 
-/-- **Kakutani's fixed-point theorem**, proved through a partition of unity: in a
+/-- **Kakutani's fixed-point theorem**, proved through approximate selections: in a
 finite-dimensional real normed space, if `φ` sends each point of a nonempty compact convex set `s`
 to a nonempty convex subset of `s` and its graph `{(x, y) | x ∈ s, y ∈ φ x}` is closed, then
 `x ∈ φ x` for some `x ∈ s`. -/
@@ -127,4 +124,4 @@ theorem exists_fixedPoint {s : Set V} (hconv : Convex ℝ s) (hcomp : IsCompact 
   exact exists_mem_self_of_approx hcomp hmaps hφconv hgraph tendsto_one_div_add_atTop_nhds_zero_nat
     hx hw0 hw1 (fun n j ↦ ⟨(hay n j).1, (hay n j).2.1, (hay n j).2.2.le⟩) hsum
 
-end Kakutani.PartitionOfUnity
+end Kakutani.Selection

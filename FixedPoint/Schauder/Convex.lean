@@ -5,8 +5,9 @@ Authors: The-Anh Vu-Le
 -/
 module
 
-public import FixedPoint.Schauder.Projection
+public import FixedPoint.Common.SchauderProjection
 public import FixedPoint.Brouwer.Polytope
+public import FixedPoint.Common.ContinuousMap
 
 /-!
 # Schauder's fixed-point theorem for compact convex sets
@@ -21,8 +22,8 @@ public import FixedPoint.Brouwer.Polytope
 
 Cover `s` by finitely many open balls of radius `ε` centered at the points of a finite set
 `t ⊆ s`, and let `P` be Schauder's projection onto the convex hull `K ⊆ s` of `t`
-(`FixedPoint/Schauder/Projection.lean`), which moves each point of `s` by less than `ε`. The map
-`P ∘ f` sends `K` continuously into itself, and `K` lies in the finite-dimensional span of `t`, so
+(`SchauderProjection.blend`), which moves each point of `s` by less than `ε`. The map `P ∘ f`
+sends `K` continuously into itself, and `K` lies in the finite-dimensional span of `t`, so
 it has a fixed point `x` (`Brouwer.exists_fixedPoint_convexHull_of_finite`). Then
 `dist (f x) x = dist (f x) (P (f x)) < ε`. With `ε = 1 / (n + 1)` this gives points `x n ∈ s`
 with `dist (f (x n)) (x n) → 0`; a subsequence converges to some `x ∈ s`, and `f x = x` by
@@ -48,6 +49,8 @@ open Set Filter Topology
 
 namespace Schauder
 
+open SchauderProjection
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- For every `ε > 0`, a map that is continuous on a nonempty compact convex set `s` of a real
@@ -55,25 +58,20 @@ normed space and maps `s` into itself moves some point of `s` by less than `ε`.
 theorem exists_dist_lt {s : Set E} (hconv : Convex ℝ s) (hcomp : IsCompact s) (hne : s.Nonempty)
     {f : E → E} (hmaps : MapsTo f s s) (hf : ContinuousOn f s) {ε : ℝ} (hε : 0 < ε) :
     ∃ x ∈ s, dist (f x) x < ε := by
-  obtain ⟨t, hts, htfin, hcover⟩ := hcomp.finite_cover_balls hε
-  have hcov : ∀ x ∈ s, ∃ c ∈ htfin.toFinset, dist x c < ε := fun x hx ↦ by
-    obtain ⟨c, hc, hxc⟩ := mem_iUnion₂.1 (hcover hx)
-    exact ⟨c, htfin.mem_toFinset.2 hc, hxc⟩
-  have htne : t.Nonempty := by
+  obtain ⟨t, hts, hcov⟩ := exists_finset_cover hcomp hε
+  have htne : (t : Set E).Nonempty := by
     obtain ⟨x, hx⟩ := hne
-    obtain ⟨c, hc, -⟩ := mem_iUnion₂.1 (hcover hx)
+    obtain ⟨c, hc, -⟩ := hcov x hx
     exact ⟨c, hc⟩
-  have hK : convexHull ℝ t ⊆ s := convexHull_min hts hconv
+  have hK : convexHull ℝ (t : Set E) ⊆ s := convexHull_min hts hconv
   -- Schauder's projection onto the convex hull of `t`
-  let P := blend htfin.toFinset ε id
-  have hP : ∀ x ∈ s, P x ∈ convexHull ℝ t := fun x hx ↦ by
-    simpa using blend_id_mem_convexHull (hcov x hx)
-  obtain ⟨x, hx, hPx⟩ := Brouwer.exists_fixedPoint_convexHull_of_finite htfin htne (f := P ∘ f)
-    (fun x hx ↦ hP _ (hmaps (hK hx)))
+  let P := blend t ε id
+  obtain ⟨x, hx, hPx⟩ := Brouwer.exists_fixedPoint_convexHull_of_finite t.finite_toSet htne
+    (f := P ∘ f) (fun x hx ↦ blend_id_mem_convexHull (hcov _ (hmaps (hK hx))))
     ((continuousOn_blend _ ε id).comp (hf.mono hK) fun x hx ↦ hcov _ (hmaps (hK hx)))
   refine ⟨x, hK hx, ?_⟩
   have hlt := dist_blend_id_lt (hcov _ (hmaps (hK hx)))
-  rw [show blend htfin.toFinset ε id (f x) = x from hPx, dist_comm] at hlt
+  rw [show blend t ε id (f x) = x from hPx, dist_comm] at hlt
   exact hlt
 
 /-- **Schauder's fixed-point theorem**: in a real normed space, a map that is continuous on a
@@ -94,17 +92,8 @@ theorem exists_fixedPoint {s : Set E} (hconv : Convex ℝ s) (hcomp : IsCompact 
 /-- **Schauder's fixed-point theorem** for a continuous self-map of a nonempty compact convex set
 of a real normed space. -/
 theorem exists_fixedPoint_continuousMap {s : Set E} (hconv : Convex ℝ s) (hcomp : IsCompact s)
-    (hne : s.Nonempty) (f : C(s, s)) : ∃ x, f x = x := by
-  classical
-  let F : E → E := fun v ↦ if h : v ∈ s then (f ⟨v, h⟩ : E) else v
-  have hmaps : MapsTo F s s := fun v hv ↦ by simp [F, hv]
-  have hF : ContinuousOn F s := by
-    rw [continuousOn_iff_continuous_domRestrict]
-    have : s.domRestrict F = fun x : s ↦ (f x : E) := funext fun x ↦ by
-      simp [Set.domRestrict_apply, F, x.2]
-    rw [this]
-    exact continuous_subtype_val.comp f.continuous
-  obtain ⟨x, hx, hfx⟩ := exists_fixedPoint hconv hcomp hne hmaps hF
-  exact ⟨⟨x, hx⟩, Subtype.ext (by simpa [F, hx] using hfx)⟩
+    (hne : s.Nonempty) (f : C(s, s)) : ∃ x, f x = x :=
+  FixedPoint.exists_fixedPoint_continuousMap_of
+    (fun _ hmaps hf ↦ exists_fixedPoint hconv hcomp hne hmaps hf) f
 
 end Schauder

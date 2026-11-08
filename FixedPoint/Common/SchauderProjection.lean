@@ -15,24 +15,36 @@ Let `t` be a finite set of points of a metric space `X` and `ε > 0`. The point 
 weight `max 0 (ε - dist x c)` at `x`, positive exactly on the open ball of radius `ε` about `c`.
 On the union of these balls the weights do not all vanish, and the weighted average of values
 `y c` in a real normed space,
-`Schauder.blend t ε y x = (∑ c ∈ t, weight c x)⁻¹ • ∑ c ∈ t, weight c x • y c`,
+`SchauderProjection.blend t ε y x = (∑ c ∈ t, weight c x)⁻¹ • ∑ c ∈ t, weight c x • y c`,
 
-* is continuous (`Schauder.continuousOn_blend`);
+* is continuous (`SchauderProjection.continuousOn_blend`);
 * is a convex combination of the values `y c` at the centers `c` within `ε` of `x`
-  (`Schauder.blend_mem_convexHull`).
+  (`SchauderProjection.blend_mem_convexHull`).
 
 For `y = id` this is Schauder's projection onto the convex hull of `t`, which moves each point of
-the union of the balls by less than `ε` (`Schauder.dist_blend_id_lt`). The name is the one of
-later expositions: Schauder's 1930 paper approximates by simplicial maps instead.
+the union of the balls by less than `ε` (`SchauderProjection.dist_blend_id_lt`). The name is the
+one of later expositions: Schauder's 1930 paper approximates by simplicial maps instead.
+
+A compact set is covered by such balls, about the points of a finite subset `t`
+(`SchauderProjection.exists_finset_cover`).
 -/
 
 @[expose] public section
 
 open Set Metric
 
-namespace Schauder
+namespace SchauderProjection
 
 variable {X E : Type*} [PseudoMetricSpace X] [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+/-- A compact set is covered by the open balls of radius `ε` about the points of a finite
+subset. -/
+theorem exists_finset_cover {s : Set X} (hs : IsCompact s) {ε : ℝ} (hε : 0 < ε) :
+    ∃ t : Finset X, (t : Set X) ⊆ s ∧ ∀ x ∈ s, ∃ c ∈ t, dist x c < ε := by
+  obtain ⟨t, hts, htfin, hcover⟩ := hs.finite_cover_balls hε
+  refine ⟨htfin.toFinset, by simpa using hts, fun x hx ↦ ?_⟩
+  obtain ⟨c, hc, hxc⟩ := mem_iUnion₂.1 (hcover hx)
+  exact ⟨c, htfin.mem_toFinset.2 hc, hxc⟩
 
 /-- The weight of the center `c` at `x`: positive exactly on the open ball of radius `ε` about
 `c`. -/
@@ -93,4 +105,4 @@ theorem dist_blend_id_lt {t : Finset E} {ε : ℝ} {x : E} (hx : ∃ c ∈ t, di
     exact hxc
   exact convexHull_min hsub (convex_ball x ε) (blend_mem_convexHull hx id)
 
-end Schauder
+end SchauderProjection

@@ -13,7 +13,7 @@ public import Mathlib.Topology.EMetricSpace.Lipschitz
 
 In a real inner product space `F` that is complete, every nonempty closed convex set `s` is the
 image of a `1`-Lipschitz retraction of `F`: send each point to its nearest point in `s`
-(`Brouwer.exists_lipschitzWith_retraction`). The nearest point `π u` exists by
+(`NearestPoint.exists_lipschitzWith_retraction`). The nearest point `π u` exists by
 `exists_norm_eq_iInf_of_complete_convex`, and is characterized by `⟪u - π u, w - π u⟫ ≤ 0` for
 `w ∈ s` (`norm_eq_iInf_iff_real_inner_le_zero`); adding these inequalities for `u = x` and `u = y`
 gives `‖π x - π y‖² ≤ ⟪x - y, π x - π y⟫ ≤ ‖x - y‖ ‖π x - π y‖`.
@@ -24,7 +24,7 @@ gives `‖π x - π y‖² ≤ ⟪x - y, π x - π y⟫ ≤ ‖x - y‖ ‖π x 
 open Set
 open scoped RealInnerProductSpace
 
-namespace Brouwer
+namespace NearestPoint
 
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 
@@ -57,4 +57,4 @@ theorem exists_lipschitzWith_retraction {s : Set F} (hne : s.Nonempty) (hcl : Is
     have h2 : ‖x - π x‖ = 0 := by nlinarith [norm_nonneg (x - π x)]
     exact (sub_eq_zero.mp (norm_eq_zero.mp h2)).symm
 
-end Brouwer
+end NearestPoint

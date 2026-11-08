@@ -6,8 +6,8 @@ Authors: The-Anh Vu-Le
 module
 
 public import FixedPoint.Brouwer.Ball
-public import FixedPoint.Brouwer.NearestPoint
-public import Mathlib.Topology.ContinuousMap.Defs
+public import FixedPoint.Common.NearestPoint
+public import FixedPoint.Common.ContinuousMap
 
 /-!
 # Brouwer's fixed-point theorem for compact convex sets
@@ -21,9 +21,9 @@ public import Mathlib.Topology.ContinuousMap.Defs
 
 Through a linear isomorphism with `EuclideanSpace ℝ (Fin n)` we may assume that the space has an
 inner product. There, `s` lies in a closed ball `B̄`, and is a retract of the whole space through
-the nearest-point map `π` (`Brouwer.exists_lipschitzWith_retraction`). The map `f ∘ π` sends `B̄`
-continuously into `s ⊆ B̄`, so has a fixed point `x` (`Brouwer.exists_fixedPoint_closedBall`);
-then `x = f (π x) ∈ s`, so `π x = x` and `f x = x`.
+the nearest-point map `π` (`NearestPoint.exists_lipschitzWith_retraction`). The map `f ∘ π`
+sends `B̄` continuously into `s ⊆ B̄`, so has a fixed point `x`
+(`Brouwer.exists_fixedPoint_closedBall`); then `x = f (π x) ∈ s`, so `π x = x` and `f x = x`.
 -/
 
 @[expose] public section
@@ -38,7 +38,8 @@ theorem exists_fixedPoint_of_innerProductSpace {F : Type*} [NormedAddCommGroup F
     [InnerProductSpace ℝ F] [FiniteDimensional ℝ F] {s : Set F} (hconv : Convex ℝ s)
     (hcomp : IsCompact s) (hne : s.Nonempty) {f : F → F} (hmaps : MapsTo f s s)
     (hf : ContinuousOn f s) : ∃ x ∈ s, f x = x := by
-  obtain ⟨π, hπ, hπs, hπfix⟩ := exists_lipschitzWith_retraction hne hcomp.isClosed hconv
+  obtain ⟨π, hπ, hπs, hπfix⟩ :=
+    NearestPoint.exists_lipschitzWith_retraction hne hcomp.isClosed hconv
   obtain ⟨R, hR, hsR⟩ := hcomp.isBounded.subset_closedBall_lt 0 0
   obtain ⟨x, -, hfx⟩ := exists_fixedPoint_closedBall (c := 0) hR.le (f := fun x ↦ f (π x))
     (fun x _ ↦ hsR (hmaps (hπs x))) (hf.comp_continuous hπ.continuous hπs).continuousOn
@@ -69,17 +70,8 @@ theorem exists_fixedPoint {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 of a finite-dimensional real normed space. -/
 theorem exists_fixedPoint_continuousMap {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {s : Set V} (hconv : Convex ℝ s) (hcomp : IsCompact s)
-    (hne : s.Nonempty) (f : C(s, s)) : ∃ x, f x = x := by
-  classical
-  let F : V → V := fun v ↦ if h : v ∈ s then (f ⟨v, h⟩ : V) else v
-  have hmaps : MapsTo F s s := fun v hv ↦ by simp [F, hv]
-  have hF : ContinuousOn F s := by
-    rw [continuousOn_iff_continuous_domRestrict]
-    have : s.domRestrict F = fun x : s ↦ (f x : V) := funext fun x ↦ by
-      simp [Set.domRestrict_apply, F, x.2]
-    rw [this]
-    exact continuous_subtype_val.comp f.continuous
-  obtain ⟨x, hx, hfx⟩ := exists_fixedPoint hconv hcomp hne hmaps hF
-  exact ⟨⟨x, hx⟩, Subtype.ext (by simpa [F, hx] using hfx)⟩
+    (hne : s.Nonempty) (f : C(s, s)) : ∃ x, f x = x :=
+  FixedPoint.exists_fixedPoint_continuousMap_of
+    (fun _ hmaps hf ↦ exists_fixedPoint hconv hcomp hne hmaps hf) f
 
 end Brouwer

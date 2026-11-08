@@ -22,8 +22,8 @@ standard `r`-simplex. Its barycentric subdivision has one piece for each orderin
 for a permutation `σ`, the piece `{x ∈ Δ | x (σ 0) ≥ x (σ 1) ≥ ⋯ ≥ x (σ r)}` is the simplex whose
 `k`-th vertex is the barycenter `vertex σ k` of `e (σ 0), …, e (σ k)`. A point `x` of the piece
 is `x = ∑ k, coord σ x k • vertex σ k` with the barycentric coordinates
-`coord σ x k = (k + 1) (x (σ k) - x (σ (k + 1)))`, `x (σ (r + 1)) = 0` (`vmap_coord`), and the
-linear map `vmap σ : e k ↦ vertex σ k` maps `Δ` onto the piece.
+`coord σ x k = (k + 1) (x (σ k) - x (σ (k + 1)))`, `x (σ (r + 1)) = 0` (`vmap_coord`), for the
+linear map `vmap σ : e k ↦ vertex σ k`, which maps `Δ` into `Δ`.
 
 The `n`-th barycentric subdivision subdivides each piece of the `(n - 1)`-th; equivalently, its
 pieces are the images under the maps `vmap σ` of the pieces of the `(n - 1)`-th subdivision of
@@ -33,8 +33,9 @@ pieces are the images under the maps `vmap σ` of the pieces of the `(n - 1)`-th
   contains `x`, and `coords n x` are the barycentric coordinates of `x` in it
   (`sum_coords_smul_verts`): `verts (n + 1) x = vmap σ ∘ verts n (coord σ x)` and
   `coords (n + 1) x = coords n (coord σ x)`;
-* `interp n g x = ∑ k, coords n x k • g (verts n x k)` is the map that is linear on each piece of
-  the `n`-th subdivision and takes the values `g v` at its vertices `v`;
+* `interp n g x = ∑ k, coords n x k • g (verts n x k)` is, on the piece with the vertices
+  `verts n x`, the linear interpolation of the values `g v` at the vertices `v`: Kakutani's map;
+  its value does not depend on the orderings chosen at each level (`interp_succ`);
 * `continuousOn_interp`: `interp n g` is continuous on `Δ`, whatever `g`. On the piece of `σ` it
   is `interp (n - 1) (g ∘ vmap σ) ∘ coord σ` (`interp_succ`), since two orderings of `x` give the
   same coordinates and the same vertices wherever the coordinates do not vanish (`coord_eq`,
@@ -54,7 +55,8 @@ variable {r : ℕ}
 
 /-! ### The standard simplex -/
 
-/-- The standard `r`-simplex `{x | x ≥ 0, ∑ x = 1}` in `Fin (r + 1) → ℝ`. -/
+/-- The standard `r`-simplex `{x | x ≥ 0, ∑ x = 1}` in `Fin (r + 1) → ℝ`; it is Mathlib's
+`stdSimplex ℝ (Fin (r + 1))`, whose name and lemmas are deprecated at the pinned Mathlib. -/
 def simplex (r : ℕ) : Set (Fin (r + 1) → ℝ) := {x | (∀ i, 0 ≤ x i) ∧ ∑ i, x i = 1}
 
 theorem convex_simplex (r : ℕ) : Convex ℝ (simplex r) := by
@@ -100,7 +102,7 @@ noncomputable def coord (σ : Equiv.Perm (Fin (r + 1))) (x : Fin (r + 1) → ℝ
 noncomputable def vertex (σ : Equiv.Perm (Fin (r + 1))) (k : Fin (r + 1)) : Fin (r + 1) → ℝ :=
   fun i ↦ if (σ.symm i : ℕ) ≤ k then ((k : ℕ) + 1 : ℝ)⁻¹ else 0
 
-/-- The linear map sending `e k` to `vertex σ k`; it maps the simplex onto the piece of `σ`. -/
+/-- The linear map sending `e k` to `vertex σ k`; the piece of `σ` is the image of the simplex. -/
 noncomputable def vmap (σ : Equiv.Perm (Fin (r + 1))) :
     (Fin (r + 1) → ℝ) →ₗ[ℝ] Fin (r + 1) → ℝ :=
   ∑ k, (LinearMap.proj k : (Fin (r + 1) → ℝ) →ₗ[ℝ] ℝ).smulRight (vertex σ k)
@@ -109,7 +111,7 @@ theorem vmap_apply (σ : Equiv.Perm (Fin (r + 1))) (u : Fin (r + 1) → ℝ) :
     vmap σ u = ∑ k, u k • vertex σ k := by
   simp [vmap]
 
-theorem sum_range_ite_sub (f : ℕ → ℝ) (j : ℕ) :
+private theorem sum_range_ite_sub (f : ℕ → ℝ) (j : ℕ) :
     ∀ n, ∑ k ∈ range n, (if j ≤ k then f k - f (k + 1) else 0) = if j ≤ n then f j - f n else 0
   | 0 => by
     by_cases h : j ≤ 0
@@ -126,7 +128,7 @@ theorem sum_range_ite_sub (f : ℕ → ℝ) (j : ℕ) :
         simp
       · rw [ite_eq_right h, ite_eq_right h, ite_eq_right (by omega), add_zero]
 
-theorem sum_range_mul_sub (f : ℕ → ℝ) :
+private theorem sum_range_mul_sub (f : ℕ → ℝ) :
     ∀ n, ∑ k ∈ range n, ((k : ℝ) + 1) * (f k - f (k + 1)) = ∑ k ∈ range n, f k - n * f n
   | 0 => by simp
   | n + 1 => by
@@ -278,13 +280,14 @@ theorem iUnion_piece : ⋃ σ, piece σ = simplex r :=
 
 /-! ### Iterated subdivisions -/
 
-/-- The barycentric coordinates of `x` in a piece of the `n`-th barycentric subdivision that
-contains it. -/
+/-- For `x` in the simplex, the barycentric coordinates of `x` in a piece of the `n`-th barycentric
+subdivision that contains it. -/
 noncomputable def coords : ℕ → (Fin (r + 1) → ℝ) → Fin (r + 1) → ℝ
   | 0, x => x
   | n + 1, x => coords n (coord (Tuple.sortDesc x) x)
 
-/-- The vertices of a piece of the `n`-th barycentric subdivision that contains `x`. -/
+/-- For `x` in the simplex, the vertices of a piece of the `n`-th barycentric subdivision that
+contains `x`. -/
 noncomputable def verts : ℕ → (Fin (r + 1) → ℝ) → Fin (r + 1) → Fin (r + 1) → ℝ
   | 0, _ => fun k ↦ Pi.single k 1
   | n + 1, x => fun k ↦ vmap (Tuple.sortDesc x) (verts n (coord (Tuple.sortDesc x) x) k)
@@ -313,7 +316,7 @@ theorem sum_coords_smul_verts : ∀ n {x : Fin (r + 1) → ℝ}, x ∈ simplex r
 
 /-- If `x = ∑ k, c k • w k` with `c ≥ 0` and `w k ≥ 0`, a vertex `w k` with `c k ≠ 0` vanishes
 wherever `x` vanishes. -/
-theorem eq_zero_of_sum_smul {ι : Type*} [Fintype ι] {c : ι → ℝ} {w : ι → Fin (r + 1) → ℝ}
+private theorem eq_zero_of_sum_smul {ι : Type*} [Fintype ι] {c : ι → ℝ} {w : ι → Fin (r + 1) → ℝ}
     {x : Fin (r + 1) → ℝ} (hc : ∀ k, 0 ≤ c k) (hw : ∀ k i, 0 ≤ w k i)
     (hsum : ∑ k, c k • w k = x) {k : ι} (hk : c k ≠ 0) {i : Fin (r + 1)} (hi : x i = 0) :
     w k i = 0 := by
@@ -328,8 +331,8 @@ theorem eq_zero_of_sum_smul {ι : Type*} [Fintype ι] {c : ι → ℝ} {w : ι �
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
 
-/-- The map that is linear on each piece of the `n`-th barycentric subdivision and takes the value
-`g v` at each vertex `v`. -/
+/-- For `x` in the simplex, the linear interpolation of the values `g v` at the vertices `v` of a
+piece of the `n`-th barycentric subdivision that contains `x`. -/
 noncomputable def interp (n : ℕ) (g : (Fin (r + 1) → ℝ) → E) (x : Fin (r + 1) → ℝ) : E :=
   ∑ k, coords n x k • g (verts n x k)
 
@@ -446,7 +449,7 @@ theorem l1_vmap_le (σ : Equiv.Perm (Fin (r + 1))) {d : Fin (r + 1) → ℝ} (hd
           mul_comm]
         rfl
 
-/-- The vertices of the piece of the `n`-th subdivision that contains `x` are within
+/-- The vertices `verts n x` of a piece of the `n`-th subdivision that contains `x` are within
 `2 (r / (r + 1)) ^ n` of `x` in the `ℓ¹` norm. -/
 theorem l1_verts_sub_le : ∀ n {x : Fin (r + 1) → ℝ}, x ∈ simplex r → ∀ k,
     l1 (verts n x k - x) ≤ 2 * ((r : ℝ) / (r + 1)) ^ n
@@ -477,7 +480,7 @@ theorem l1_verts_sub_le : ∀ n {x : Fin (r + 1) → ℝ}, x ∈ simplex r → �
           mul_le_mul_of_nonneg_left (l1_verts_sub_le n hu k) (by positivity)
       _ = 2 * ((r : ℝ) / (r + 1)) ^ (n + 1) := by ring
 
-/-- The vertices of the piece of the `n`-th subdivision that contains `x` are within
+/-- The vertices `verts n x` of a piece of the `n`-th subdivision that contains `x` are within
 `2 (r / (r + 1)) ^ n` of `x`. -/
 theorem dist_verts_le (n : ℕ) {x : Fin (r + 1) → ℝ} (hx : x ∈ simplex r) (k : Fin (r + 1)) :
     dist (verts n x k) x ≤ 2 * ((r : ℝ) / (r + 1)) ^ n :=
