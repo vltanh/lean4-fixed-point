@@ -27,9 +27,9 @@ project:
     Kakutani's fixed-point theorem (1941) and Schauder's fixed-point theorem (1930) are derived from
     Brouwer's. Kakutani's: a set-valued map of a nonempty compact convex subset of a
     finite-dimensional real normed space, with closed graph and nonempty convex values, has a point
-    x in its own value at x; it is proved by Kakutani's argument (continuous approximations, Brouwer,
-    a limit along a subsequence, then a retraction for general compact convex sets), with the
-    approximating maps built from a partition of unity instead of barycentric subdivisions.
+    x in its own value at x; it is proved by Kakutani's argument (piecewise-linear approximations on
+    barycentric subdivisions of a simplex, Brouwer, a limit along a subsequence, then a retraction
+    for general compact convex sets), and a second time through a partition of unity.
     Schauder's: a continuous self-map of a nonempty compact convex subset of a real normed space of
     any dimension has a fixed point, and so does a continuous self-map of a nonempty closed convex
     subset of a real Banach space with relatively compact image; it is proved through Schauder's
@@ -95,8 +95,8 @@ sources:
     note: >-
       Kakutani's fixed-point theorem: Theorem 1 (closed simplices) and its Corollary (bounded closed
       convex sets of a Euclidean space), with his upper semicontinuity (closed graph). Proved by
-      Kakutani's argument except that the approximating maps come from a partition of unity
-      instead of barycentric subdivisions (fidelity). Theorem 2 (von Neumann's lemma) and Theorem 3
+      Kakutani's argument, with barycentric subdivisions of the standard simplex carried to other
+      simplices by a linear map (fidelity); a second proof uses a partition of unity. Theorem 2 (von Neumann's lemma) and Theorem 3
       (the minimax theorem) are not formalized. Compared with a scan of the printed pages.
     author_endorsement: "n/a"
   - title: "Der Fixpunktsatz in Funktionalräumen"
@@ -267,7 +267,10 @@ status:
     convex values on nonempty compact convex subsets of finite-dimensional real normed spaces, for
     closed simplices (Kakutani's Theorem 1) and for compact convex subsets of finite-dimensional
     real inner product spaces (his Corollary), with the equivalence of a closed graph and Kakutani's
-    sequential upper semicontinuity. Schauder's fixed-point theorem for nonempty compact convex
+    sequential upper semicontinuity, proved by Kakutani's argument on iterated barycentric
+    subdivisions of the standard simplex (with the continuity of piecewise-linear interpolation
+    and the decay of the mesh) and again through a partition of unity. Schauder's fixed-point
+    theorem for nonempty compact convex
     subsets of real normed spaces of any dimension, complete or not, and for nonempty closed convex
     subsets of real Banach spaces and maps with relatively compact image; Mazur's theorem on the
     compactness of closed convex hulls, used for the latter. The Challenge states Brouwer's theorem
@@ -327,20 +330,19 @@ fidelity:
     for closed sets is equivalent to his sequential definition (Kakutani.isClosed_graph_iff_seq),
     and the values are required nonempty and convex (closed values follow from the closed graph).
     Kakutani's Theorem 1 is proved for convex hulls of nonempty finite sets, closed simplices being
-    a special case also stated. Proofs: Kakutani's argument is followed (continuous approximations,
-    Brouwer's theorem, a limit along a subsequence using the closed graph and convex values, then
-    the reduction of compact convex sets to Theorem 1 through a retraction). Kakutani's Theorem 1
+    a special case also stated. Proofs: Kakutani's Theorem 1
     does not state that the values are nonempty, but his proof needs it and the theorem fails
-    without it; the formalization requires it, as his Theorem 2 does. One departure:
-    Kakutani approximates the set-valued map by maps that are linear on the simplices of the n-th
-    barycentric subdivision of the simplex, while the formalization uses the partition of unity of
-    Schauder's projection subordinate to a cover by balls of radius 1/(n+1), and Caratheodory's
-    theorem to write the fixed point of the approximation as a convex combination of dim V + 1
-    points (Kakutani has the r + 1 vertices of a small simplex). Reason: Mathlib has no geometric
-    barycentric subdivision of a simplex, and building it (the subdivision, piecewise-linear maps
-    on it and the decay of its mesh) is a large effort for one step. Kakutani encloses the set in
-    a simplex, the formalization in the convex hull of a finite set, and uses the nearest-point
-    retraction.
+    without it; the formalization requires it, as his Theorem 2 does. Theorem 1 is proved by
+    Kakutani's argument, including his approximation by maps that are linear on the simplices of
+    the n-th barycentric subdivision (built in FixedPoint/Simplex/Subdivision.lean, with the
+    continuity of the piecewise-linear maps and the decay of the mesh). The subdivisions are built
+    on the standard simplex and carried to any other simplex, or convex hull of finitely many
+    points, by the linear map u -> sum u_k v_k, where Kakutani subdivides the simplex itself; one
+    subsequence serves where Kakutani takes them one after the other. For the Corollary, Kakutani
+    encloses the set in a simplex, the formalization in the convex hull of a finite set (the image
+    of a simplex), and uses the nearest-point retraction, which Kakutani leaves unspecified. A
+    second proof (Kakutani.PartitionOfUnity.exists_fixedPoint) replaces the subdivisions by the
+    partition of unity of Schauder's projection and Caratheodory's theorem.
 
 
     Schauder. Statements: Schauder states Satz I for complete metric linear spaces (Banach's

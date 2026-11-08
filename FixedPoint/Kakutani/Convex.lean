@@ -33,10 +33,11 @@ map `x ↦ φ (π x)` sends `K` to nonempty convex subsets of `s ⊆ K`, with cl
 `π x = x` and `x ∈ φ x`. A linear isomorphism `V ≃L[ℝ] EuclideanSpace ℝ (Fin n)` reduces normed
 spaces to inner product spaces.
 
-Kakutani encloses `s` in a simplex; the formalization proves Theorem 1 for convex hulls of finite
-sets, simplices included, and encloses `s` in such a hull. Since the formal proof of Theorem 1
-uses only that the hull is compact and convex (`FixedPoint/Kakutani/Simplex.lean`), it would also
-apply to `s` directly; the reduction is kept because it is Kakutani's proof of his Corollary.
+Kakutani encloses `s` in a simplex; the formalization encloses it in the convex hull of a finite
+set, the image of a simplex under a linear map, for which Theorem 1 is proved the same way
+(`Kakutani.exists_fixedPoint_convexHull`), and uses the nearest-point retraction, which Kakutani
+leaves unspecified. A second proof, which needs no simplex, is
+`Kakutani.PartitionOfUnity.exists_fixedPoint`.
 -/
 
 @[expose] public section

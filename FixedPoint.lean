@@ -12,8 +12,11 @@ public import FixedPoint.Brouwer.Ball
 public import FixedPoint.Brouwer.NearestPoint
 public import FixedPoint.Brouwer.Convex
 public import FixedPoint.Brouwer.Polytope
+public import FixedPoint.Kakutani.Limit
 public import FixedPoint.Kakutani.Simplex
+public import FixedPoint.Kakutani.PartitionOfUnity
 public import FixedPoint.Kakutani.Convex
 public import FixedPoint.Schauder.Projection
 public import FixedPoint.Schauder.Convex
 public import FixedPoint.Schauder.CompactImage
+public import FixedPoint.Simplex.Subdivision

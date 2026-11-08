@@ -6,23 +6,25 @@ Authors: The-Anh Vu-Le
 module
 
 public import FixedPoint.Brouwer.Convex
-public import FixedPoint.Schauder.Projection
-public import Mathlib.Analysis.Convex.Caratheodory
-public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
+public import FixedPoint.Kakutani.Limit
+public import FixedPoint.Simplex.Subdivision
+public import Mathlib.Data.Set.Finite.Lemmas
 public import Mathlib.LinearAlgebra.AffineSpace.Simplex.Basic
 
 /-!
 # Kakutani's fixed-point theorem for simplices
 
-Let `S` be a closed simplex, or more generally the convex hull of a nonempty finite set, in a
-finite-dimensional real normed space `V`, and `φ : V → Set V` a set-valued map that sends each
-point of `S` to a nonempty convex subset of `S`, with closed graph
-`{(x, y) | x ∈ S, y ∈ φ x}`. Then `x ∈ φ x` for some `x ∈ S`.
+Let `S` be a closed simplex, or more generally the convex hull of finitely many points, in a real
+normed space `V`, and `φ : V → Set V` a set-valued map that sends each point of `S` to a nonempty
+convex subset of `S`, with closed graph `{(x, y) | x ∈ S, y ∈ φ x}`. Then `x ∈ φ x` for some
+`x ∈ S`.
 
-* `Kakutani.exists_fixedPoint_convexHull`: for the convex hull of a nonempty finite set;
+* `Kakutani.exists_fixedPoint_stdSimplex`: for the standard simplex of `Fin (r + 1) → ℝ`;
 * `Kakutani.exists_fixedPoint_simplex` (S. Kakutani, *A generalization of Brouwer's fixed point
   theorem*, Duke Math. J. 8 (1941), 457–459, Theorem 1): for a closed simplex `S.closedInterior`,
-  `S : Affine.Simplex ℝ V r`.
+  `S : Affine.Simplex ℝ V r`;
+* `Kakutani.exists_fixedPoint_convexHull_range`, `Kakutani.exists_fixedPoint_convexHull`: for the
+  convex hull of finitely many points.
 
 Kakutani does not say that the values `φ x` are nonempty; his proof picks a point of each, and
 the theorem fails for `φ x = ∅`, so the values are required nonempty here. His closed convex
@@ -30,165 +32,112 @@ values become convex values, closedness following from the closed graph.
 
 ## Proof
 
-Kakutani's argument, except for the construction of the approximating maps.
+Kakutani's proof, on the standard simplex `Δ`.
 
-1. For `δ > 0`, cover `S` by finitely many open balls of radius `δ` centered at points `c ∈ S`,
-   pick `y c ∈ φ c`, and let `F x` be the average of the `y c` weighted by the partition of unity
-   of Schauder's projection (`Schauder.blend`). Then `F` is continuous on `S` and maps `S` into
-   `S`, so it has a fixed point `x` by Brouwer's theorem (`Brouwer.exists_fixedPoint`). By
-   Carathéodory's theorem, `x = ∑ w j • y j` for `d + 1` weights `w j ≥ 0` of sum `1`, `d = dim V`,
-   and points `y j ∈ φ (a j)` with `a j ∈ S` within `δ` of `x` (`Kakutani.exists_approx`).
-2. Take `δ = 1 / (n + 1)`. A subsequence of `(x, w, y)` converges to some `(x₀, w₀, y₀)`, and the
-   `a j` converge to `x₀` too. As the graph is closed, `y₀ j ∈ φ x₀`; as `φ x₀` is convex,
-   `x₀ = ∑ w₀ j • y₀ j ∈ φ x₀`.
+1. Pick `y v ∈ φ v` for each `v ∈ Δ`. The map `φₙ = BarycentricSubdivision.interp n y`, linear on
+   each simplex of the `n`-th barycentric subdivision of `Δ` with the value `y v` at each vertex
+   `v`, is continuous and maps `Δ` into itself, so it has a fixed point `xₙ` by Brouwer's theorem
+   (`Brouwer.exists_fixedPoint`).
+2. If `xₙ` lies in the simplex of the subdivision with vertices `xₙᵢ` and `xₙ = ∑ λₙᵢ xₙᵢ`, then
+   `xₙ = φₙ xₙ = ∑ λₙᵢ y (xₙᵢ)`, with `y (xₙᵢ) ∈ φ (xₙᵢ)`, and the vertices are within
+   `2 (r / (r + 1)) ^ n` of `xₙ` (`BarycentricSubdivision.dist_verts_le`).
+3. Along a subsequence, `xₙ → x₀`, `λₙ → λ₀` and `y (xₙᵢ) → y₀ᵢ`; then `xₙᵢ → x₀`, so
+   `y₀ᵢ ∈ φ x₀` by the closed graph, and `x₀ = ∑ λ₀ᵢ y₀ᵢ ∈ φ x₀` by convexity
+   (`Kakutani.exists_mem_self_of_approx`).
 
-Departure from Kakutani's proof: Kakutani approximates `φ` by the map that is linear on each
-simplex of the `n`-th barycentric subdivision of `S` and sends each of its vertices `v` to a point
-of `φ v`; its fixed point is a convex combination of the values at the `r + 1` vertices of a
-small simplex. Mathlib has no geometric barycentric subdivision of a simplex in a vector space, so
-step 1 replaces it by the partition of unity of Schauder's projection, and Carathéodory's theorem
-brings the number of points down to `d + 1`. Step 2 is Kakutani's. Brouwer's theorem is applied to
-`S` as a compact convex set, and the partition of unity needs only that `S` be compact and
-convex.
+A simplex `S` with vertices `v 0, …, v r` in `V` is the image of `Δ` under the linear map
+`A u = ∑ u k • v k`, which maps the subdivisions of `Δ` to those of `S`; the theorem for `S`
+follows from the theorem on `Δ` for `u ↦ {u' ∈ Δ | A u' ∈ φ (A u)}`. This change of coordinates is
+the only difference from Kakutani's text, which subdivides `S` itself. It does not use that the
+vertices are affinely independent, so the theorem holds for convex hulls of finitely many points.
 -/
 
 @[expose] public section
 
-open Set Filter Topology Module
+open Set Filter Topology BarycentricSubdivision
 
 namespace Kakutani
 
-/-- **Carathéodory's theorem** with exactly `finrank + 1` points: a point of the convex hull of `T`
-in a finite-dimensional real vector space is a convex combination of `finrank + 1` points of `T`,
-repetitions and zero weights allowed. -/
-theorem exists_sum_fin_eq_of_mem_convexHull {V : Type*} [AddCommGroup V] [Module ℝ V]
-    [FiniteDimensional ℝ V] {T : Set V} {x : V} (hx : x ∈ convexHull ℝ T) :
-    ∃ (w : Fin (finrank ℝ V + 1) → ℝ) (z : Fin (finrank ℝ V + 1) → V),
-      (∀ j, 0 ≤ w j) ∧ ∑ j, w j = 1 ∧ (∀ j, z j ∈ T) ∧ ∑ j, w j • z j = x := by
-  classical
-  obtain ⟨ι, _, z, w, hzT, hind, hw0, hw1, hwz⟩ := eq_pos_convex_span_of_mem_convexHull hx
-  have hcard : Fintype.card ι ≤ Fintype.card (Fin (finrank ℝ V + 1)) := by
-    rw [Fintype.card_fin]
-    exact (AffineIndependent.card_le_finrank_succ hind).trans
-      (Nat.succ_le_succ (Submodule.finrank_le _))
-  obtain ⟨e⟩ := Function.Embedding.nonempty_of_card_le hcard
-  obtain ⟨i₀⟩ : Nonempty ι := by
-    by_contra h
-    rw [not_nonempty_iff] at h
-    simp at hw1
-  have hext : ∀ j, j ∉ range e → Function.extend e w 0 j = 0 := fun j hj ↦
-    Function.extend_apply' _ _ _ (by simpa using hj)
-  refine ⟨Function.extend e w 0, Function.extend e z fun _ ↦ z i₀, fun j ↦ ?_, ?_,
-    fun j ↦ ?_, ?_⟩
-  · by_cases h : j ∈ range e
-    · obtain ⟨i, rfl⟩ := h
-      rw [e.injective.extend_apply]
-      exact (hw0 i).le
-    · rw [hext j h]
-  · rw [← hw1]
-    exact (Fintype.sum_of_injective e e.injective _ _ hext
-      fun i ↦ (e.injective.extend_apply _ _ _).symm).symm
-  · by_cases h : j ∈ range e
-    · obtain ⟨i, rfl⟩ := h
-      rw [e.injective.extend_apply]
-      exact hzT ⟨i, rfl⟩
-    · rw [Function.extend_apply' _ _ _ (by simpa using h)]
-      exact hzT ⟨i₀, rfl⟩
-  · rw [← hwz]
-    refine (Fintype.sum_of_injective e e.injective _ _ (fun j hj ↦ ?_)
-      fun i ↦ ?_).symm
-    · rw [hext j hj, zero_smul]
-    · rw [e.injective.extend_apply, e.injective.extend_apply]
+/-- **Kakutani's fixed-point theorem** for the standard simplex `Δ` of `Fin (r + 1) → ℝ`, by
+Kakutani's proof: if `φ` sends each point of `Δ` to a nonempty convex subset of `Δ` and its graph
+`{(x, y) | x ∈ Δ, y ∈ φ x}` is closed, then `x ∈ φ x` for some `x ∈ Δ`. -/
+theorem exists_fixedPoint_stdSimplex {r : ℕ} {φ : (Fin (r + 1) → ℝ) → Set (Fin (r + 1) → ℝ)}
+    (hmaps : ∀ x ∈ simplex r, φ x ⊆ simplex r) (hφne : ∀ x ∈ simplex r, (φ x).Nonempty)
+    (hφconv : ∀ x ∈ simplex r, Convex ℝ (φ x))
+    (hgraph : IsClosed {p : (Fin (r + 1) → ℝ) × (Fin (r + 1) → ℝ) |
+      p.1 ∈ simplex r ∧ p.2 ∈ φ p.1}) :
+    ∃ x ∈ simplex r, x ∈ φ x := by
+  choose! y hy using hφne
+  -- Step 1: `φₙ = interp n y` has a fixed point `x n`, by Brouwer's theorem
+  have hfix : ∀ n : ℕ, ∃ x ∈ simplex r, interp n y x = x := fun n ↦
+    Brouwer.exists_fixedPoint (convex_simplex r) (isCompact_simplex r) ⟨_, single_mem_simplex 0⟩
+      (fun x hx ↦ (convex_simplex r).sum_mem (fun k _ ↦ (coords_mem n hx).1 k)
+        (coords_mem n hx).2 fun k _ ↦ hmaps _ (verts_mem n hx k) (hy _ (verts_mem n hx k)))
+      (continuousOn_interp n y)
+  choose x hx hxfix using hfix
+  -- Steps 2 and 3: `x n = ∑ λₙᵢ y (xₙᵢ)` with vertices `xₙᵢ` close to `x n`, and the limit
+  have hr : (r : ℝ) / (r + 1) < 1 := by
+    rw [div_lt_one (by positivity)]
+    linarith
+  have hδ : Tendsto (fun n : ℕ ↦ 2 * ((r : ℝ) / (r + 1)) ^ n) atTop (𝓝 0) := by
+    simpa using (tendsto_pow_atTop_nhds_zero_of_lt_one (by positivity) hr).const_mul 2
+  exact exists_mem_self_of_approx (isCompact_simplex r) hmaps hφconv hgraph (x := x)
+    (w := fun n ↦ coords n (x n)) (a := fun n ↦ verts n (x n))
+    (y := fun n k ↦ y (verts n (x n) k)) hδ hx (fun n k ↦ (coords_mem n (hx n)).1 k)
+    (fun n ↦ (coords_mem n (hx n)).2)
+    (fun n k ↦ ⟨verts_mem n (hx n) k, hy _ (verts_mem n (hx n) k), dist_verts_le n (hx n) k⟩)
+    hxfix
 
-variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V] [FiniteDimensional ℝ V]
+variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
-/-- Step 1 of Kakutani's proof, with the partition of unity of Schauder's projection in place of
-the barycentric subdivision: for every `δ > 0`, some `x ∈ s` is a convex combination
-`∑ w j • y j` of `finrank + 1` points `y j ∈ φ (a j)`, with `a j ∈ s` within `δ` of `x`. -/
-theorem exists_approx {s : Set V} (hconv : Convex ℝ s) (hcomp : IsCompact s) (hne : s.Nonempty)
-    {φ : V → Set V} (hmaps : ∀ x ∈ s, φ x ⊆ s) (hφne : ∀ x ∈ s, (φ x).Nonempty) {δ : ℝ}
-    (hδ : 0 < δ) :
-    ∃ x ∈ s, ∃ (w : Fin (finrank ℝ V + 1) → ℝ) (a y : Fin (finrank ℝ V + 1) → V),
-      (∀ j, 0 ≤ w j) ∧ ∑ j, w j = 1 ∧
-        (∀ j, a j ∈ s ∧ y j ∈ φ (a j) ∧ dist (a j) x < δ) ∧ ∑ j, w j • y j = x := by
-  classical
-  obtain ⟨t, hts, htfin, hcover⟩ := hcomp.finite_cover_balls hδ
-  have hcov : ∀ x ∈ s, ∃ c ∈ htfin.toFinset, dist x c < δ := fun x hx ↦ by
-    obtain ⟨c, hc, hxc⟩ := mem_iUnion₂.1 (hcover hx)
-    exact ⟨c, htfin.mem_toFinset.2 hc, hxc⟩
-  choose! g hg using hφne
-  -- the approximating map: the values `g c ∈ φ c` averaged with Schauder's partition of unity
-  let F := Schauder.blend htfin.toFinset δ g
-  have hT : ∀ x, g '' {c | c ∈ htfin.toFinset ∧ dist x c < δ} ⊆ s := fun x ↦ by
-    rintro _ ⟨c, ⟨hc, -⟩, rfl⟩
-    have hcs : c ∈ s := hts (htfin.mem_toFinset.1 hc)
-    exact hmaps c hcs (hg c hcs)
-  have hF : MapsTo F s s := fun x hx ↦
-    convexHull_min (hT x) hconv (Schauder.blend_mem_convexHull (hcov x hx) g)
-  obtain ⟨x, hx, hFx⟩ := Brouwer.exists_fixedPoint hconv hcomp hne hF
-    ((Schauder.continuousOn_blend _ δ g).mono hcov)
-  have hxT : x ∈ convexHull ℝ (g '' {c | c ∈ htfin.toFinset ∧ dist x c < δ}) := by
-    have h := Schauder.blend_mem_convexHull (hcov x hx) g
-    rwa [show Schauder.blend htfin.toFinset δ g x = x from hFx] at h
-  obtain ⟨w, z, hw0, hw1, hz, hsum⟩ := exists_sum_fin_eq_of_mem_convexHull hxT
-  choose a ha using hz
-  refine ⟨x, hx, w, a, z, hw0, hw1, fun j ↦ ?_, hsum⟩
-  obtain ⟨⟨hc, hdist⟩, hgz⟩ := ha j
-  have has : a j ∈ s := hts (htfin.mem_toFinset.1 hc)
-  exact ⟨has, hgz ▸ hg _ has, by rw [dist_comm]; exact hdist⟩
-
-/-- **Kakutani's fixed-point theorem** for the convex hull `S` of a nonempty finite set in a
-finite-dimensional real normed space: if `φ` sends each point of `S` to a nonempty convex subset
+/-- **Kakutani's fixed-point theorem** for the convex hull `S` of finitely many points
+`v 0, …, v r` of a real normed space: if `φ` sends each point of `S` to a nonempty convex subset
 of `S` and its graph `{(x, y) | x ∈ S, y ∈ φ x}` is closed, then `x ∈ φ x` for some `x ∈ S`. -/
-theorem exists_fixedPoint_convexHull {t : Set V} (ht : t.Finite) (htne : t.Nonempty)
-    {φ : V → Set V} (hmaps : ∀ x ∈ convexHull ℝ t, φ x ⊆ convexHull ℝ t)
-    (hφne : ∀ x ∈ convexHull ℝ t, (φ x).Nonempty)
-    (hφconv : ∀ x ∈ convexHull ℝ t, Convex ℝ (φ x))
-    (hgraph : IsClosed {p : V × V | p.1 ∈ convexHull ℝ t ∧ p.2 ∈ φ p.1}) :
-    ∃ x ∈ convexHull ℝ t, x ∈ φ x := by
-  set s := convexHull ℝ t
-  have hcomp : IsCompact s := ht.isCompact_convexHull ℝ
-  -- Step 1, for `δ = 1 / (n + 1)`
-  choose x hx w a y hw0 hw1 hay hsum using fun n : ℕ ↦
-    exists_approx (convex_convexHull ℝ t) hcomp (htne.convexHull (𝕜 := ℝ)) hmaps hφne
-      (Nat.one_div_pos_of_nat (α := ℝ) (n := n))
-  -- Step 2: a convergent subsequence
-  have hK : IsCompact (s ×ˢ ((univ.pi fun _ : Fin (finrank ℝ V + 1) ↦ Icc (0 : ℝ) 1) ×ˢ
-      univ.pi fun _ : Fin (finrank ℝ V + 1) ↦ s)) :=
-    hcomp.prod ((isCompact_univ_pi fun _ ↦ isCompact_Icc).prod
-      (isCompact_univ_pi fun _ ↦ hcomp))
-  have hw1' : ∀ n j, w n j ≤ 1 := fun n j ↦ (hw1 n) ▸
-    Finset.single_le_sum (fun i _ ↦ hw0 n i) (Finset.mem_univ j)
-  obtain ⟨⟨x₀, w₀, y₀⟩, ⟨hx₀, -, -⟩, ψ, hψ, hlim⟩ :=
-    hK.tendsto_subseq (x := fun n ↦ (x n, w n, y n))
-      fun n ↦ ⟨hx n, fun j _ ↦ ⟨hw0 n j, hw1' n j⟩, fun j _ ↦ hmaps _ (hay n j).1 (hay n j).2.1⟩
-  have hxlim : Tendsto (fun k ↦ x (ψ k)) atTop (𝓝 x₀) :=
-    (continuous_fst.tendsto _).comp hlim
-  have hwlim : ∀ j, Tendsto (fun k ↦ w (ψ k) j) atTop (𝓝 (w₀ j)) := fun j ↦
-    (((continuous_apply j).comp (continuous_fst.comp continuous_snd)).tendsto _).comp hlim
-  have hylim : ∀ j, Tendsto (fun k ↦ y (ψ k) j) atTop (𝓝 (y₀ j)) := fun j ↦
-    (((continuous_apply j).comp (continuous_snd.comp continuous_snd)).tendsto _).comp hlim
-  have halim : ∀ j, Tendsto (fun k ↦ a (ψ k) j) atTop (𝓝 x₀) := fun j ↦
-    hxlim.congr_dist (squeeze_zero (fun _ ↦ dist_nonneg)
-      (fun k ↦ by rw [dist_comm]; exact (hay (ψ k) j).2.2.le)
-      (tendsto_one_div_add_atTop_nhds_zero_nat.comp hψ.tendsto_atTop))
-  -- the limits `y₀ j` lie in `φ x₀`, as the graph is closed
-  have hy₀ : ∀ j, y₀ j ∈ φ x₀ := fun j ↦
-    (hgraph.mem_of_tendsto ((halim j).prodMk_nhds (hylim j))
-      (Eventually.of_forall fun k ↦ ⟨(hay (ψ k) j).1, (hay (ψ k) j).2.1⟩)).2
-  have hw₀0 : ∀ j, 0 ≤ w₀ j := fun j ↦ ge_of_tendsto' (hwlim j) fun k ↦ hw0 (ψ k) j
-  have hw₀1 : ∑ j, w₀ j = 1 :=
-    tendsto_nhds_unique (tendsto_finsetSum _ fun j _ ↦ hwlim j)
-      (by simpa only [hw1] using tendsto_const_nhds)
-  have heq : ∑ j, w₀ j • y₀ j = x₀ :=
-    tendsto_nhds_unique (tendsto_finsetSum _ fun j _ ↦ (hwlim j).smul (hylim j))
-      (by simpa only [hsum] using hxlim)
-  exact ⟨x₀, hx₀, heq ▸ (hφconv x₀ hx₀).sum_mem (fun j _ ↦ hw₀0 j) hw₀1 fun j _ ↦ hy₀ j⟩
+theorem exists_fixedPoint_convexHull_range {r : ℕ} (v : Fin (r + 1) → V) {φ : V → Set V}
+    (hmaps : ∀ x ∈ convexHull ℝ (range v), φ x ⊆ convexHull ℝ (range v))
+    (hφne : ∀ x ∈ convexHull ℝ (range v), (φ x).Nonempty)
+    (hφconv : ∀ x ∈ convexHull ℝ (range v), Convex ℝ (φ x))
+    (hgraph : IsClosed {p : V × V | p.1 ∈ convexHull ℝ (range v) ∧ p.2 ∈ φ p.1}) :
+    ∃ x ∈ convexHull ℝ (range v), x ∈ φ x := by
+  set K := convexHull ℝ (range v)
+  -- the linear map `A u = ∑ u k • v k` maps the standard simplex onto `K`
+  let A : (Fin (r + 1) → ℝ) →L[ℝ] V := ∑ k, (ContinuousLinearMap.proj k).smulRight (v k)
+  have hA : ∀ u, A u = ∑ k, u k • v k := fun u ↦ by simp [A]
+  have himage : A '' simplex r = K := by
+    apply subset_antisymm
+    · rintro _ ⟨u, hu, rfl⟩
+      rw [hA]
+      exact (convex_convexHull ℝ _).sum_mem (fun k _ ↦ hu.1 k) hu.2
+        fun k _ ↦ subset_convexHull ℝ _ ⟨k, rfl⟩
+    · refine convexHull_min ?_ ((convex_simplex r).linear_image A.toLinearMap)
+      rintro _ ⟨k, rfl⟩
+      exact ⟨Pi.single k 1, single_mem_simplex k, by simp [hA, Pi.single_apply]⟩
+  have hAK : ∀ u ∈ simplex r, A u ∈ K := fun u hu ↦ himage ▸ mem_image_of_mem A hu
+  -- the set-valued map `u ↦ {u' ∈ Δ | A u' ∈ φ (A u)}` on the standard simplex
+  let ψ : (Fin (r + 1) → ℝ) → Set (Fin (r + 1) → ℝ) := fun u ↦ simplex r ∩ A ⁻¹' φ (A u)
+  have hψne : ∀ u ∈ simplex r, (ψ u).Nonempty := fun u hu ↦ by
+    obtain ⟨z, hz⟩ := hφne _ (hAK u hu)
+    have hzK : z ∈ A '' simplex r := himage ▸ hmaps _ (hAK u hu) hz
+    obtain ⟨u', hu', rfl⟩ := hzK
+    exact ⟨u', hu', hz⟩
+  have hψgraph : IsClosed {p : (Fin (r + 1) → ℝ) × (Fin (r + 1) → ℝ) |
+      p.1 ∈ simplex r ∧ p.2 ∈ ψ p.1} := by
+    have : {p : (Fin (r + 1) → ℝ) × (Fin (r + 1) → ℝ) | p.1 ∈ simplex r ∧ p.2 ∈ ψ p.1} =
+        (simplex r ×ˢ simplex r) ∩ Prod.map A A ⁻¹' {q : V × V | q.1 ∈ K ∧ q.2 ∈ φ q.1} := by
+      ext ⟨p₁, p₂⟩
+      simp only [ψ, mem_ofPred_eq, mem_inter_iff, mem_preimage, mem_prod, Prod.map]
+      exact ⟨fun ⟨h₁, h₂, h₃⟩ ↦ ⟨⟨h₁, h₂⟩, hAK _ h₁, h₃⟩, fun ⟨⟨h₁, h₂⟩, _, h₃⟩ ↦ ⟨h₁, h₂, h₃⟩⟩
+    rw [this]
+    exact ((isClosed_simplex r).prod (isClosed_simplex r)).inter
+      (hgraph.preimage (A.continuous.prodMap A.continuous))
+  obtain ⟨u, hu, hψu⟩ := exists_fixedPoint_stdSimplex (φ := ψ) (fun _ _ ↦ inter_subset_left)
+    hψne (fun u hu ↦ (convex_simplex r).inter ((hφconv _ (hAK u hu)).linear_preimage A.toLinearMap))
+    hψgraph
+  exact ⟨A u, hAK u hu, hψu.2⟩
 
 /-- **Kakutani's fixed-point theorem** for a closed simplex (Kakutani 1941, Theorem 1): if `φ`
-sends each point of the closed simplex `S` of a finite-dimensional real normed space to a
-nonempty convex subset of `S` and its graph `{(x, y) | x ∈ S, y ∈ φ x}` is closed, then
-`x ∈ φ x` for some `x ∈ S`. -/
+sends each point of the closed simplex `S` of a real normed space to a nonempty convex subset of
+`S` and its graph `{(x, y) | x ∈ S, y ∈ φ x}` is closed, then `x ∈ φ x` for some `x ∈ S`. -/
 theorem exists_fixedPoint_simplex {r : ℕ} (S : Affine.Simplex ℝ V r) {φ : V → Set V}
     (hmaps : ∀ x ∈ S.closedInterior, φ x ⊆ S.closedInterior)
     (hφne : ∀ x ∈ S.closedInterior, (φ x).Nonempty)
@@ -196,6 +145,22 @@ theorem exists_fixedPoint_simplex {r : ℕ} (S : Affine.Simplex ℝ V r) {φ : V
     (hgraph : IsClosed {p : V × V | p.1 ∈ S.closedInterior ∧ p.2 ∈ φ p.1}) :
     ∃ x ∈ S.closedInterior, x ∈ φ x := by
   rw [← S.convexHull_eq_closedInterior] at hmaps hφne hφconv hgraph ⊢
-  exact exists_fixedPoint_convexHull (finite_range _) (range_nonempty _) hmaps hφne hφconv hgraph
+  exact exists_fixedPoint_convexHull_range S.points hmaps hφne hφconv hgraph
+
+/-- **Kakutani's fixed-point theorem** for the convex hull `S` of a nonempty finite set of a real
+normed space: if `φ` sends each point of `S` to a nonempty convex subset of `S` and its graph
+`{(x, y) | x ∈ S, y ∈ φ x}` is closed, then `x ∈ φ x` for some `x ∈ S`. -/
+theorem exists_fixedPoint_convexHull {t : Set V} (ht : t.Finite) (htne : t.Nonempty)
+    {φ : V → Set V} (hmaps : ∀ x ∈ convexHull ℝ t, φ x ⊆ convexHull ℝ t)
+    (hφne : ∀ x ∈ convexHull ℝ t, (φ x).Nonempty)
+    (hφconv : ∀ x ∈ convexHull ℝ t, Convex ℝ (φ x))
+    (hgraph : IsClosed {p : V × V | p.1 ∈ convexHull ℝ t ∧ p.2 ∈ φ p.1}) :
+    ∃ x ∈ convexHull ℝ t, x ∈ φ x := by
+  obtain ⟨n, f, rfl⟩ := ht.fin_embedding
+  cases n with
+  | zero =>
+    obtain ⟨_, ⟨i, -⟩⟩ := htne
+    exact i.elim0
+  | succ r => exact exists_fixedPoint_convexHull_range (fun i ↦ f i) hmaps hφne hφconv hgraph
 
 end Kakutani

@@ -14,10 +14,13 @@ import all FixedPoint.Brouwer.Polytope
 import all FixedPoint.Brouwer.SmoothFixedPoint
 import all FixedPoint.Brouwer.SmoothRetraction
 import all FixedPoint.Kakutani.Convex
+import all FixedPoint.Kakutani.Limit
+import all FixedPoint.Kakutani.PartitionOfUnity
 import all FixedPoint.Kakutani.Simplex
 import all FixedPoint.Schauder.Convex
 import all FixedPoint.Schauder.CompactImage
 import all FixedPoint.Schauder.Projection
+import all FixedPoint.Simplex.Subdivision
 -- The Challenge's theorems, as `FixedPointSolution.lean` restates and proves them.
 import all FixedPointSolution
 
@@ -52,6 +55,8 @@ meta def mainResults : List Name :=
    ``Kakutani.exists_fixedPoint_of_innerProductSpace,
    ``Kakutani.exists_fixedPoint_simplex,
    ``Kakutani.exists_fixedPoint_convexHull,
+   ``Kakutani.exists_fixedPoint_stdSimplex,
+   ``Kakutani.PartitionOfUnity.exists_fixedPoint,
    ``Schauder.exists_fixedPoint,
    ``Schauder.exists_fixedPoint_continuousMap,
    ``Schauder.exists_fixedPoint_of_isCompact_closure_image,
